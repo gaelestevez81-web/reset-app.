@@ -1,0 +1,12 @@
+RESET v6 — cómo subirlo a GitHub Pages (desde iPad o iPhone)
+
+1. Abre tu repositorio en github.com (el mismo que usa gaelestevez81-web.github.io/...).
+2. Borra los archivos viejos: index.html, styles.css, app.js, manifest.json, sw.js.
+3. Toca "Add file" > "Upload files" y sube TODO lo de esta carpeta,
+   incluida la carpeta "icons" (con sus 4 imágenes). Luego "Commit changes".
+4. Espera 1–2 minutos y abre tu web en Safari. Si ves la versión vieja, recarga 2 veces.
+5. Para que parezca app: Safari > Compartir > "Añadir a pantalla de inicio".
+   Si ya tenías el icono viejo, bórralo y vuelve a añadirlo (así toma el icono nuevo).
+
+Tus tareas y hábitos de la versión anterior se importan solos la primera vez.
+Los datos se guardan solo en ese dispositivo: usa Profile > "Back up my data" de vez en cuando.
