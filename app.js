@@ -2105,12 +2105,15 @@ function parseHealth(txt) {
     if (/^\d{1,3}(,\d{3})+(\.\d+)?/.test(raw)) raw = raw.replace(/,/g, ''); else raw = raw.replace(',', '.');
     const n = parseFloat(raw.replace(/[^\d.\-]/g, ' ').trim().split(/\s+/)[0]);
     const key = m[1].toLowerCase();
+    if (['steps', 'exercise', 'mindful'].includes(key)) { const d = m[2].replace(/\.\d{1,2}(?!\d)/, '').replace(/[^\d]/g, ''); if (d) out[key] = parseInt(d, 10); return; }
     if (key === 'date') out.date = m[2].trim().slice(0, 10);
     else if (!isNaN(n)) out[key] = n;
   });
+  if (!Object.keys(out).length) { const only = String(txt || '').trim(); if (/^[\d.,\s\u00a0\u202f]+$/.test(only)) { const n = parseInt(only.replace(/[^\d]/g, ''), 10); if (n) out.raw = n; } }
   return out;
 }
 function applyHealth(d) {
+  if (d.raw != null && d.steps == null) d.steps = d.raw;
   const k = /^\d{4}-\d{2}-\d{2}$/.test(d.date || '') ? d.date : TODAY(), done = [];
   if (d.steps != null) { S.steps[k] = Math.round(d.steps); done.push(`${S.steps[k].toLocaleString('en-GB')} steps`); }
   if (d.exercise != null && d.exercise > 0) { S.moves = S.moves.filter(m => m.id !== 'ah-' + k); S.moves.push({ id: 'ah-' + k, date: k, type: 'other', mins: Math.round(d.exercise), label: 'Apple Health exercise' }); done.push(`${Math.round(d.exercise)} active min`); }
@@ -2145,8 +2148,13 @@ function pHealthSync() {
 }
 Object.assign(A, {
   async hsPaste() {
-    try { const t = await navigator.clipboard.readText(); if (!t) throw new Error('empty'); applyHealth(parseHealth(t)); }
-    catch (e) { toast('Paste it into the box below'); $('#hs-text')?.focus(); }
+    try { const t = await navigator.clipboard.readText(); if (!t || !t.trim()) throw new Error('empty'); applyHealth(parseHealth(t)); }
+    catch (e) {
+      openSheet('Paste your Health data', `<p class="small muted" style="margin-top:-4px">1. Run <b>RESET Sync</b> in Shortcuts.<br>2. Come back, <b>press and hold</b> in the box below and tap <b>Paste</b>.<br>3. Tap <b>Import</b>.</p><textarea class="input" id="hs-text2" rows="3" placeholder="Steps=6540"></textarea><button class="btn" style="margin-top:10px" data-a="save">Import</button><button class="link" style="margin-top:12px" data-a="guide">How do I set up the shortcut?</button>`, {
+        save() { const t = val('#hs-text2'); if (!t.trim()) return shake('#hs-text2'); closeSheet(); applyHealth(parseHealth(t)); },
+        guide() { closeSheet(); go('profile/health'); },
+      });
+    }
   },
   hsApply() { const t = val('#hs-text'); if (!t.trim()) return shake('#hs-text'); applyHealth(parseHealth(t)); },
 });
@@ -2491,7 +2499,7 @@ Object.assign(HOME_RENDER, {
   },
   sync: () => {
     const hs = S.healthSync, today = hs && dk(new Date(hs.last)) === TODAY();
-    if (!hs) return `<button class="syncbar soft" data-a="go" data-to="profile/health">${I.heartPulse}<span><b>Connect Apple Health</b><small>One-time setup · steps, sleep, weight</small></span>${I.right}</button>`;
+    if (!hs) return `<button class="syncbar" data-a="hsPaste">${I.heartPulse}<span><b>Sync Apple Health</b><small>Run RESET Sync, then tap here · tap “Paste” if asked</small></span><span class="syncic">↻</span></button>`;
     return `<button class="syncbar ${today ? 'soft' : ''}" data-a="hsPaste">${I.heartPulse}<span><b>${today ? 'Apple Health synced' : 'Sync Apple Health'}</b><small>${today ? 'Last: ' + new Date(hs.last).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ' · tap to refresh' : 'Tap to bring in today’s data'}</small></span><span class="syncic">↻</span></button>`;
   },
   program: () => {

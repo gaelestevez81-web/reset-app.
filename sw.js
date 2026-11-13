@@ -1,6 +1,6 @@
 /* RESET service worker — network-first so updates from GitHub show up right away,
    with an offline cache fallback. Bump VERSION when you change files. */
-const VERSION = 'reset-v8.0.0';
+const VERSION = 'reset-v8.1.0';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './manifest.json',
   './recipes.js', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 

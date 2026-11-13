@@ -1,4 +1,4 @@
-RESET v8 — cómo subirla a GitHub
+RESET v8.1 — cómo subirla a GitHub
 ================================
 1. En tu repositorio de GitHub, borra todos los archivos anteriores.
 2. Sube TODOS los archivos de este zip (13 archivos), sueltos en la raíz, sin carpetas:
