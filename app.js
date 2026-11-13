@@ -183,8 +183,8 @@ function migrateOld(s) {
   return true;
 }
 function seedHabits(s) {
-  [['💧', 'Drink water'], ['🚶', 'Move for 20 minutes'], ['🧘', 'Stretch'], ['📖', 'Read 10 pages']].forEach(([e, t], i) =>
-    s.habits.push({ id: uid(), title: t, emoji: e, color: HCOLORS[i], days: [0, 1, 2, 3, 4, 5, 6], created: TODAY() }));
+  [['🚶', 'Move for 20 minutes'], ['🧘', 'Stretch'], ['📖', 'Read 10 pages']].forEach(([e, t], i) =>
+    s.habits.push({ id: uid(), title: t, emoji: e, color: HCOLORS[i + 1], days: [0, 1, 2, 3, 4, 5, 6], created: TODAY() }));
 }
 function load() {
   let s = null;
@@ -2722,6 +2722,36 @@ Object.assign(A, {
     }
     if (!S.profile.stepGoal) S.profile.stepGoal = 8000;
     S.v = 9; save();
+  }
+})();
+
+
+/* =========================================================
+   v10 — STEPS CARD, NO SLEEP TILE, NO WATER HABIT
+   ========================================================= */
+function stepsCardHTML() {
+  const t = TODAY(), hs = S.healthSync, synced = hs && dk(new Date(hs.last)) === t, apple = isApple();
+  const st = S.steps[t] || 0, g = +S.profile.stepGoal || 8000, p = st / g;
+  const btn = apple ? `<button class="hsync ${synced ? '' : 'due'}" data-a="hsPaste" aria-label="Sync steps"><span>${synced ? new Date(hs.last).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'Sync'}</span>↻</button>` : `<button class="hsync due" data-a="stepsSheet">+ Add</button>`;
+  return `<section class="card steps-card"><div class="card-head"><span class="eyebrow">Steps</span>${btn}</div>
+    <button class="steps-body" data-a="go" data-to="health/movement">
+      <span class="steps-ic">👟</span>
+      <span class="steps-main"><b>${st ? st.toLocaleString('en-GB') : '—'}</b><small>${st ? `${Math.round(p * 100)}% of ${g.toLocaleString('en-GB')}` : apple ? 'Tap ↻ to sync today’s steps' : 'Tap + Add to log today’s steps'}</small></span>
+      ${st >= g ? '<span class="tag">🎉 Goal</span>' : ''}
+    </button>
+    <span class="hbar" style="margin-top:12px"><i style="width:${Math.round(clamp(p, 0, 1) * 100)}%;background:var(--accent)"></i></span>
+    ${apple && !hs ? `<button class="link" style="margin-top:10px" data-a="go" data-to="profile/health">First time? Set up the shortcut step by step →</button>` : ''}</section>`;
+}
+HOME_CARDS.health = 'Steps';
+HOME_RENDER.health = stepsCardHTML;
+delete HEALTH_MODS.sleep;
+{ const i = DEFAULT_HEALTH.indexOf('sleep'); if (i >= 0) DEFAULT_HEALTH.splice(i, 1); }
+(function v10migrate() {
+  if ((S.v || 9) < 10) {
+    if (Array.isArray(S.profile.healthOrder)) S.profile.healthOrder = S.profile.healthOrder.filter(x => x !== 'sleep');
+    const water = S.habits.filter(h => !h.type && h.emoji === '💧' && /^drink water$/i.test((h.title || '').trim()));
+    if (water.length) { const ids = new Set(water.map(h => h.id)); S.habits = S.habits.filter(h => !ids.has(h.id)); Object.values(S.habitLog).forEach(a => { for (let i = a.length - 1; i >= 0; i--) if (ids.has(a[i])) a.splice(i, 1); }); }
+    S.v = 10; save();
   }
 })();
 

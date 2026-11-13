@@ -604,3 +604,10 @@ code{font-size:13px;background:var(--bg2);padding:1px 5px;border-radius:5px}
 .hs-ck{flex:0 0 30px;height:30px;border-radius:50%;border:1.5px solid var(--accent);background:transparent;color:var(--accent-strong);font-weight:700;cursor:pointer}
 .hs-steps li.ok .hs-ck{background:var(--accent);color:#fff}
 .hs-steps li.ok .t{color:var(--muted);text-decoration:line-through}
+
+/* ===== v10 ===== */
+.steps-body{display:flex;align-items:center;gap:14px;width:100%;border:0;background:none;padding:0;text-align:left;cursor:pointer;color:var(--ink);font:inherit}
+.steps-ic{width:52px;height:52px;border-radius:16px;background:var(--accent-soft);display:grid;place-items:center;font-size:26px;flex:none}
+.steps-main{flex:1;display:flex;flex-direction:column}
+.steps-main b{font:600 32px/1.1 var(--serif)}
+.steps-main small{color:var(--muted);font-size:12.5px}
