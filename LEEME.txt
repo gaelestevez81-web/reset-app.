@@ -1,0 +1,13 @@
+RESET v8 — cómo subirla a GitHub
+================================
+1. En tu repositorio de GitHub, borra todos los archivos anteriores.
+2. Sube TODOS los archivos de este zip (13 archivos), sueltos en la raíz, sin carpetas:
+   index.html, styles.css, app.js, media.js, recipes.js, jszip.min.js,
+   manifest.json, sw.js, icon-192.png, icon-512.png, icon-maskable-512.png,
+   apple-touch-icon.png, LEEME.txt
+3. Espera 1–2 minutos y abre la app. Si ves la versión anterior, ciérrala y ábrela de nuevo.
+
+VIDEOS DE EJERCICIOS (no van en GitHub)
+- En la app: Health → Workout Planner → Program → "Import videos (.zip)".
+- Elige tu archivo Exercises_Videos.zip (el mismo que me enviaste).
+- Los videos se guardan solo en tu teléfono. Cada teléfono los importa una vez.
