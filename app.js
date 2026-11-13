@@ -1909,7 +1909,7 @@ const moveIn = (arr, i, d) => { const j = i + d; if (j < 0 || j >= arr.length) r
 SCREENS.health = r => {
   const map = { move: 'movement', mood: 'wellness', food: 'nutrition' };
   const sub = map[r.sub] || r.sub;
-  const fn = { movement: hMovement, workout: hWorkout, nutrition: hNutrition, meals: hMeals, sleep: hSleep, water: hWater, wellness: hWellness, mobility: hMobility, fasting: hFasting }[sub];
+  const fn = { movement: r => hMovement(r) + stepsWeekHTML(), workout: hWorkout, nutrition: hNutrition, meals: hMeals, sleep: hSleep, water: hWater, wellness: hWellness, mobility: hMobility, fasting: hFasting }[sub];
   if (fn) return fn(r);
   const t = TODAY(), order = healthOrder();
   const headRow = `<div class="row" style="align-items:flex-end"><h1 class="title" style="flex:1">Health</h1><button class="chip ${ui.arrange ? 'on' : ''}" data-a="arrangeHealth">${ui.arrange ? 'Done' : '↕ Arrange'}</button></div><p class="hub-sub">Care for your body, mind and energy.</p>`;
@@ -2125,27 +2125,58 @@ function applyHealth(d) {
   S.healthSync = { last: new Date().toISOString(), what: done.join(' · ') };
   commit(); toast('Imported: ' + done.join(' · '));
 }
+const HS_GUIDE = [
+  ['Create the shortcut (5 min, once)', [
+    ['Open the <b>Shortcuts</b> app', 'The icon with two coloured squares. Not installed? Get it free from the App Store.'],
+    ['Tap <b>+</b> (top right)', 'Make sure you are on the <b>Shortcuts</b> tab at the bottom.'],
+    ['Name it <b>RESET Sync</b>', 'Tap the name at the top → <b>Rename</b> → type <b>RESET Sync</b> → <b>Done</b>.'],
+    ['Add <b>Find Health Samples</b>', 'Tap <b>Search Actions</b> at the bottom, type <b>health samples</b>, tap <b>Find Health Samples</b>.'],
+    ['Choose <b>Steps</b>', 'In the block, tap the blue word after <b>Type is</b> → choose <b>Steps</b>.'],
+    ['Choose <b>today</b>', 'Make the <b>Start Date</b> line read <b>is today</b>. No Start Date line? Tap <b>Add Filter</b> → <b>Start Date</b>.'],
+    ['Add <b>Calculate Statistics</b>', 'Search <b>statistics</b> → tap it. If it says <b>Average</b>, tap it and choose <b>Sum</b>.'],
+    ['Add <b>Set Variable</b>', 'Search <b>set variable</b> → tap it → tap <b>Variable Name</b> → type <b>steps</b> → <b>Done</b>.'],
+    ['Add <b>Text</b>', 'Search <b>text</b> → tap <b>Text</b>. Tap inside the box, type <code>steps=</code>, then tap the <b>steps</b> bubble in the bar above the keyboard. No bubble? Tap <b>Select Variable</b> → tap the <b>Set Variable</b> block.'],
+    ['Add <b>Copy to Clipboard</b>', 'Search <b>copy</b> → tap <b>Copy to Clipboard</b>. It should read “Copy Text to Clipboard”.'],
+    ['Test it', 'Tap <b>▶︎</b> (bottom right). The first time, tap <b>Allow</b> and switch on <b>Steps</b>.'],
+    ['Sync in RESET', 'Open RESET → tap <b>↻</b> on the Apple Health card on Home. If a small <b>Paste</b> bubble appears, tap it. You’ll see “Imported: … steps”.'],
+  ]],
+  ['Run it automatically every evening (optional)', [
+    ['Open the <b>Automation</b> tab', 'In Shortcuts, tap <b>Automation</b> at the bottom → <b>+</b> / <b>New Automation</b>.'],
+    ['Choose <b>Time of Day</b>', 'Set <b>21:00</b>, <b>Daily</b>, select <b>Run Immediately</b> → <b>Next</b>.'],
+    ['Choose <b>RESET Sync</b>', 'Done. Each evening your data is copied for you — open RESET and tap <b>↻</b> once.'],
+  ]],
+  ['Add exercise, water & weight (optional)', [
+    ['Edit RESET Sync', 'Press and hold <b>RESET Sync</b> → <b>Edit</b>. Delete the <b>Text</b> and <b>Copy to Clipboard</b> blocks (tap their ⓧ).'],
+    ['Exercise minutes', '<b>Find Health Samples</b> (Type <b>Exercise Minutes</b>, Start Date <b>is today</b>) → <b>Calculate Statistics</b> (<b>Sum</b>) → <b>Set Variable</b> named <b>exercise</b>. Needs an Apple Watch.'],
+    ['Water', 'Same three blocks with Type <b>Water</b> and the variable <b>water</b>.'],
+    ['Weight', '<b>Find Health Samples</b> (Type <b>Weight</b>, no date filter, Sort by <b>Start Date</b>, Order <b>Latest First</b>, Limit <b>1</b>) → <b>Set Variable</b> named <b>weight</b>.'],
+    ['New Text block', 'Add <b>Text</b> and build: <code>steps=</code>[steps]<code>; exercise=</code>[exercise]<code>; water=</code>[water]<code>; weight=</code>[weight] — tap each bubble above the keyboard.'],
+    ['Copy & test', 'Add <b>Copy to Clipboard</b> → tap <b>▶︎</b> → <b>Allow</b> the new data. If a block turns red, that data doesn’t exist in Health: remove its blocks and its part of the text.'],
+  ]],
+];
+const isApple = () => /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
 function pHealthSync() {
-  const [h] = modHead('hs', 'Apple Health', 'profile');
-  const steps = [
-    'Open the <b>Shortcuts</b> app and tap <b>+</b>. Name the shortcut <b>RESET Sync</b>.',
-    'Add <b>Find Health Samples</b>: Type <b>Steps</b>, Start Date <b>is today</b>. Then add <b>Calculate Statistics</b> → <b>Sum</b>. Then <b>Set Variable</b> → name it <b>steps</b>.',
-    'Repeat for <b>Exercise Minutes</b> (variable <b>exercise</b>) and <b>Water</b> (variable <b>water</b>).',
-    'For weight: <b>Find Health Samples</b> → Type <b>Weight</b>, sort by <b>Start Date</b>, <b>Latest First</b>, limit <b>1</b>. Then <b>Set Variable</b> → <b>weight</b>.',
-    'Add a <b>Text</b> action and type: <code>steps=</code>[steps]<code>; exercise=</code>[exercise]<code>; water=</code>[water]<code>; weight=</code>[weight] — tap each [name] to insert its variable.',
-    'Add <b>Copy to Clipboard</b>, then <b>Show Notification</b> with the text “Copied — open RESET”.',
-    'Optional, fully automatic: in Shortcuts open <b>Automation</b> → <b>+</b> → <b>Time of Day</b> (e.g. 21:00, Daily) → choose <b>Run Immediately</b> → action <b>Run Shortcut</b> → <b>RESET Sync</b>. Each evening your data is copied for you — RESET shows a <b>Sync Apple Health</b> button on Home: one tap and it’s in.',
-    'Run it once and tap <b>Allow</b> when it asks for Health access. Add it to your Home Screen, or use <b>Back Tap</b> (Settings → Accessibility → Touch).',
-  ];
-  return h + `<section class="card tint-accent"><div class="h3" style="margin-bottom:6px">Bring your Apple Health data into RESET</div><p class="small" style="margin:0;color:var(--ink2)">Web apps can’t read Apple Health directly — only App Store apps can. This bridge uses Apple’s free <b>Shortcuts</b> app: it copies today’s numbers, then you paste them here with one tap.</p></section>
-  <button class="btn" data-a="hsPaste">${I.heartPulse} Paste from Apple Health</button>
-  <textarea class="input" id="hs-text" style="margin-top:10px" placeholder="Or paste here, e.g.  steps=8432; exercise=35; water=1.6; weight=68.2; sleep=7.5"></textarea>
-  <button class="btn soft" style="margin-top:8px" data-a="hsApply">Import</button>
-  ${S.healthSync?.last ? `<p class="small muted" style="margin-top:10px">Last import: ${fmtWhen(S.healthSync.last)} — ${esc(S.healthSync.what)}</p>` : ''}
-  ${sectionT('Set up the shortcut (once)')}
-  <section class="card"><ol class="steps">${steps.map(s => `<li>${s}</li>`).join('')}</ol>
-  <p class="small muted" style="margin-bottom:0">Optional extras RESET understands: <code>sleep=</code> (hours), <code>mindful=</code> (minutes), <code>date=</code>YYYY-MM-DD. Data flows one way: Apple Health → RESET.</p></section>`;
+  const [h] = modHead('hs', isApple() ? 'Apple Health' : 'Health data', 'profile');
+  const done = new Set(S.profile.hsDone || []);
+  const total = HS_GUIDE.reduce((n, g) => n + g[1].length, 0), first = HS_GUIDE[0][1].length, firstDone = HS_GUIDE[0][1].filter((_, i) => done.has('0-' + i)).length;
+  if (!isApple()) return h + `<section class="card tint-accent"><div class="h3" style="margin-bottom:6px">On Android</div><p class="small" style="margin:0;color:var(--ink2)">Android phones can’t share Health Connect or Samsung Health data with web apps. Add your steps with one tap on the <b>Health</b> card on Home — look at the number in Samsung Health or Google Fit and type it in.</p></section>
+    <button class="btn" data-a="stepsSheet">👟 Add today’s steps</button>`;
+  return h + `<section class="card tint-accent"><div class="h3" style="margin-bottom:6px">Bring Apple Health into RESET</div><p class="small" style="margin:0;color:var(--ink2)">Web apps can’t read Apple Health directly. Apple’s free <b>Shortcuts</b> app copies today’s numbers, then you tap <b>↻ Sync</b> in RESET. Data only goes one way: Health → RESET.</p></section>
+  <button class="btn" data-a="hsPaste">↻ Sync now</button>
+  ${S.healthSync?.last ? `<p class="small muted" style="margin:10px 2px 0">Last sync: ${fmtWhen(S.healthSync.last)} — ${esc(S.healthSync.what)}</p>` : ''}
+  <div class="section-title"><span class="h2">Step-by-step setup</span><span class="small muted">${firstDone}/${first}</span></div>
+  <p class="small muted" style="margin:-4px 2px 12px">Tick each step as you go. Words in <b>bold</b> are exactly what you’ll see on your iPhone.</p>
+  ${HS_GUIDE.map((g, gi) => `<details class="hsg" ${gi === 0 || (gi === 1 && firstDone === first) ? 'open' : ''}><summary><span class="eyebrow">Part ${gi + 1}</span><b>${g[0]}</b></summary>
+    <ol class="hs-steps">${g[1].map(([t, d], i) => { const id = gi + '-' + i, on = done.has(id); return `<li class="${on ? 'ok' : ''}"><button class="hs-ck" data-a="hsTick" data-id="${id}" aria-label="Done">${on ? '✓' : i + 1}</button><div><div class="t">${t}</div><div class="small muted">${d}</div></div></li>`; }).join('')}</ol></details>`).join('')}
+  <details class="hsg"><summary><span class="eyebrow">Help</span><b>Something isn’t working</b></summary><div class="small" style="padding:4px 4px 10px;line-height:1.55">
+    <p><b>“Nothing to import”</b> — the clipboard was empty. Tap ▶︎ in Shortcuts again, then ↻ in RESET.</p>
+    <p><b>0 steps</b> — Settings → Health → Data Access &amp; Devices → Shortcuts → turn on Steps.</p>
+    <p><b>No blue bubble</b> — tap inside the Text box; the bubbles appear in the bar above the keyboard. On some iPhones it’s called <b>Sum</b>.</p>
+    <p><b>No Paste bubble</b> — use the box below: press and hold → Paste → Import.</p></div></details>
+  <textarea class="input" id="hs-text" style="margin-top:12px" rows="2" placeholder="Or paste here: steps=6540; exercise=25; water=1.5; weight=64.2"></textarea>
+  <button class="btn soft" style="margin-top:8px" data-a="hsApply">Import</button>`;
 }
+Object.assign(A, { hsTick(el) { const d = new Set(S.profile.hsDone || []); d.has(el.dataset.id) ? d.delete(el.dataset.id) : d.add(el.dataset.id); S.profile.hsDone = [...d]; buzz(); commit(); } });
 Object.assign(A, {
   async hsPaste() {
     try { const t = await navigator.clipboard.readText(); if (!t || !t.trim()) throw new Error('empty'); applyHealth(parseHealth(t)); }
@@ -2450,7 +2481,7 @@ Object.assign(A, {
 });
 
 /* ---------- smart daily progress ---------- */
-const SCORE_PARTS = [['habits', 'Habits'], ['tasks', 'Tasks due today'], ['water', 'Water goal'], ['program', 'Workout plan'], ['move', 'Movement minutes'], ['sleep', 'Sleep logged'], ['fasting', 'Fasting'], ['routine', 'Routines'], ['journal', 'Journal entry'], ['mood', 'Mood check-in']];
+const SCORE_PARTS = [['habits', 'Habits'], ['tasks', 'Tasks due today'], ['water', 'Water goal'], ['program', 'Workout plan'], ['steps', 'Steps goal'], ['move', 'Movement minutes'], ['sleep', 'Sleep logged'], ['fasting', 'Fasting'], ['routine', 'Routines'], ['journal', 'Journal entry'], ['mood', 'Mood check-in']];
 const DEFAULT_SCORE = ['habits', 'tasks', 'water', 'program'];
 const scoreOn = () => S.profile.score || DEFAULT_SCORE;
 function scoreItems(k) {
@@ -2460,6 +2491,7 @@ function scoreItems(k) {
   if (on.includes('tasks')) { const ts = tasksOn(k), td = ts.filter(x => x.done).length; add('tasks', td, ts.length, `${td}/${ts.length}`); }
   if (on.includes('water')) { const p = wml(k) / waterGoalMl(); add('water', Math.min(1, p), 1, Math.round(Math.min(1, p) * 100) + '%'); }
   if (on.includes('program')) { const p = progInfo(k); if (p.kind !== 'rest') add('program', progDone(k) ? 1 : 0, 1, progDone(k) ? '✓' : p.name); }
+  if (on.includes('steps')) { const g = +S.profile.stepGoal || 8000, v = S.steps[k] || 0; add('steps', Math.min(1, v / g), 1, v.toLocaleString('en-GB')); }
   if (on.includes('move')) { const p = moveMins(k) / (+S.profile.moveGoal || 30); add('move', Math.min(1, p), 1, `${moveMins(k)} min`); }
   if (on.includes('sleep')) add('sleep', S.sleep[k] ? 1 : 0, 1, S.sleep[k] ? hours(S.sleep[k].hours) : '—');
   if (on.includes('fasting')) { const f = activeFast(), fin = S.fasts.find(x => x.end && dk(new Date(x.end)) === k); const p = fin ? Math.min(1, fastHours(fin) / fin.goalH) : f && k === TODAY() ? Math.min(1, fastHours(f) / f.goalH) : 0; add('fasting', p, 1, Math.round(p * 100) + '%'); }
@@ -2642,6 +2674,54 @@ setTimeout(autoHealthSync, 1200);
       if (!l.some(x => x[0] === 'recipe')) l.push(['recipe', 1]);
     }
     S.v = 8; save();
+  }
+})();
+
+
+/* =========================================================
+   v9 — APPLE HEALTH CARD
+   ========================================================= */
+const exMinsAH = k => sum(S.moves.filter(m => m.date === k && String(m.id).startsWith('ah-')).map(m => +m.mins || 0));
+const lastWeight = () => [...S.bodyLog].filter(x => x.weight).sort((a, b) => b.date.localeCompare(a.date));
+function stepsWeekHTML() {
+  if (!Object.keys(S.steps || {}).length) return '';
+  const ks = daysBack(7), vals = ks.map(k => S.steps[k] || 0), g = +S.profile.stepGoal || 8000;
+  return `<section class="card"><div class="card-head"><span class="eyebrow">Steps · last 7 days</span><span class="small muted">avg ${Math.round(avg(vals.filter(Boolean)) || 0).toLocaleString('en-GB')}</span></div>${bars(vals, ks.map(k => DAY_LETTER[dow(k)]), { color: 'var(--accent)', goal: g, fmtv: v => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v })}</section>`;
+}
+function healthCardHTML() {
+  const t = TODAY(), hs = S.healthSync, synced = hs && dk(new Date(hs.last)) === t, apple = isApple();
+  const tiles = [];
+  const tile = (a, to, ic, label, v, sub, p, c) => tiles.push(`<button class="htile" data-a="${a}" ${to ? `data-to="${to}"` : ''}><span class="hl">${ic} ${label}</span><b>${v}</b>${p != null ? `<span class="hbar"><i style="width:${Math.round(clamp(p, 0, 1) * 100)}%;background:${c}"></i></span>` : ''}<small>${sub}</small></button>`);
+  const st = S.steps[t] || 0, sg = +S.profile.stepGoal || 8000;
+  tile('go', 'health/movement', '👟', 'Steps', st.toLocaleString('en-GB'), st ? Math.round(st / sg * 100) + '% of ' + sg.toLocaleString('en-GB') : apple ? 'Sync to update' : 'Tap to add', st / sg, 'var(--accent)');
+  if (S.moves.some(m => String(m.id).startsWith('ah-'))) { const ex = exMinsAH(t), g = +S.profile.moveGoal || 30; tile('go', 'health/movement', '💪', 'Exercise', ex + ' min', Math.round(ex / g * 100) + '% of ' + g + ' min', ex / g, 'var(--move)'); }
+  { const w = wml(t); tile('go', 'health/water', '💧', 'Water', isLiters() ? fmtL(w) : glassesOf(w) + ' glasses', Math.round(w / waterGoalMl() * 100) + '% of goal', w / waterGoalMl(), 'var(--water)'); }
+  const wl = lastWeight();
+  if (wl.length) { const cur = wl[0], prev = wl.find(x => x.date <= addD(t, -7)); const d = prev ? Math.round((cur.weight - prev.weight) * 10) / 10 : null; tile('go', 'profile/body', '⚖️', 'Weight', cur.weight + ' kg', d == null ? relDay(cur.date) : (d > 0 ? '▲ ' : d < 0 ? '▼ ' : '') + Math.abs(d) + ' kg this week', null); }
+  const right = apple ? `<button class="hsync ${synced ? '' : 'due'}" data-a="hsPaste" aria-label="Sync Apple Health"><span>${hs ? (synced ? new Date(hs.last).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'Sync') : 'Sync'}</span>↻</button>` : `<button class="link" data-a="stepsSheet">+ Steps</button>`;
+  return `<section class="card"><div class="card-head"><span class="eyebrow">${apple ? 'Apple Health' : 'Health'}</span>${right}</div>
+    <div class="htiles">${tiles.join('')}</div>
+    ${apple && !hs ? `<button class="link" style="margin-top:10px" data-a="go" data-to="profile/health">First time? Set up the shortcut step by step →</button>` : ''}</section>`;
+}
+delete HOME_CARDS.sync;
+HOME_CARDS.health = 'Apple Health';
+{ const i = DEFAULT_HOME.findIndex(x => x[0] === 'sync'); if (i >= 0) DEFAULT_HOME[i] = ['health', 1]; else DEFAULT_HOME.splice(2, 0, ['health', 1]); }
+{ const i = DEFAULT_HOME.findIndex(x => x[0] === 'steps'); if (i >= 0) DEFAULT_HOME.splice(i, 1); }
+delete HOME_CARDS.steps;
+HOME_RENDER.health = healthCardHTML;
+Object.assign(A, {
+  stepGoal(el) { S.profile.stepGoal = clamp((+S.profile.stepGoal || 8000) + +el.dataset.v, 1000, 30000); commit(); },
+});
+(function v9migrate() {
+  if ((S.v || 8) < 9) {
+    if (Array.isArray(S.profile.home)) {
+      const l = S.profile.home.filter(x => x[0] !== 'steps');
+      const i = l.findIndex(x => x[0] === 'sync');
+      if (i >= 0) l[i] = ['health', 1]; else if (!l.some(x => x[0] === 'health')) { const j = l.findIndex(x => x[0] === 'today'); l.splice(j >= 0 ? j + 1 : 1, 0, ['health', 1]); }
+      S.profile.home = l;
+    }
+    if (!S.profile.stepGoal) S.profile.stepGoal = 8000;
+    S.v = 9; save();
   }
 })();
 
