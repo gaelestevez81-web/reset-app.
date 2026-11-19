@@ -1,13 +1,23 @@
-RESET v11 — cómo subirla a GitHub
+RESET v12 — cómo subirla a GitHub
 ================================
-1. En tu repositorio de GitHub, borra todos los archivos anteriores.
-2. Sube TODOS los archivos de este zip (13 archivos), sueltos en la raíz, sin carpetas:
+1. Sube TODOS los archivos de este zip (13 archivos), sueltos en la raíz, sin carpetas.
+   Si ya existen, GitHub los reemplaza (no hace falta borrar nada):
    index.html, styles.css, app.js, media.js, recipes.js, jszip.min.js,
    manifest.json, sw.js, icon-192.png, icon-512.png, icon-maskable-512.png,
    apple-touch-icon.png, LEEME.txt
-3. Espera 1–2 minutos y abre la app. Si ves la versión anterior, ciérrala y ábrela de nuevo.
+2. Espera 1–2 minutos y abre la app. Si ves la versión anterior, ciérrala y ábrela de nuevo.
 
-VIDEOS DE EJERCICIOS (no van en GitHub)
-- En la app: Health → Workout Planner → Program → "Import videos (.zip)".
-- Elige tu archivo Exercises_Videos.zip (el mismo que me enviaste).
-- Los videos se guardan solo en tu teléfono. Cada teléfono los importa una vez.
+VIDEOS + MASTER (no van en GitHub)
+- Usa el zip nuevo "Exercises_Videos_Master.zip": son tus mismos 286 videos + el programa Master dentro.
+- En la app: Health → Workout Planner → My Plan → "Import videos (.zip)".
+- Se importan los videos y el Master queda cargado solo. Todo se guarda solo en tu teléfono.
+
+NOVEDADES v12
+- Personalized (G): 5 días · Lun Upper · Mar Stretch & Recovery · Mié Lower + Back care · Jue Full Compound · Vie Full Body + Arms.
+  Niveles Beginner / Intermediate / Advanced / Master. Duración 4, 8, 12 semanas, 180 o 360 días (estos suben de nivel solos cada 3 meses).
+- Personalized (M): Daily (Upper/Lower/Full) o 1 semana / 4 / 8 semanas con 3–6 días (U L F · U L F Core · U L F Core F · U L F U L F).
+- Gym y Bandas: 2 a 6 días · 1 semana a 1 año.
+- Solo ejercicios con video · sin repetir ejercicios en la semana · rotan cada 4 semanas · espalda baja en cada sesión (🛡️).
+- Toca cualquier ejercicio: video, gráfica de tus pesos, historial y "Save set" sin abrir el reproductor.
+- Botón "🌿 Lighter week" en Intermediate/Advanced, Gym y Bandas.
+- Anatoly sale de Gym: ahora es Master dentro de Personalized (G). Si tenías Anatoly activo, pasa a Master solo.

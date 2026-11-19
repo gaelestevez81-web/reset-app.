@@ -631,3 +631,18 @@ button.wsd{font:inherit;color:inherit;cursor:pointer}
 .exlist{display:flex;flex-direction:column;gap:2px;max-height:55vh;overflow:auto}
 .exrow{display:flex;gap:12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 .exrow .t{font-weight:600;font-size:14px}
+
+/* ===== v12 ===== */
+.qkw{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.qk{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:14px 8px;cursor:pointer;color:var(--ink);font:inherit;display:flex;flex-direction:column;align-items:center;gap:2px}
+.qk b{font-size:14px}.qk small{color:var(--muted);font-size:12px}
+
+/* v12 */
+.exbtn{width:100%;background:none;border:0;border-bottom:1px solid var(--line);font:inherit;color:inherit;text-align:left;cursor:pointer}
+.sheetvid{width:100%;aspect-ratio:1/1;max-height:42vh;border-radius:18px;overflow:hidden;margin-bottom:12px}
+.exstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.exstats div{background:var(--accent-soft);border-radius:14px;padding:10px 6px;text-align:center}
+.exstats b{display:block;font:600 18px var(--serif)}.exstats small{color:var(--muted);font-size:11px}
+.liftchart{width:100%;height:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-top:4px}
+.wkprev{margin-top:10px;display:grid;gap:4px}
+.wkprev div{display:flex;gap:10px;font-size:13px;align-items:baseline}.wkprev b{width:16px;color:var(--accent-strong)}

@@ -2757,50 +2757,63 @@ delete HEALTH_MODS.sleep;
 
 
 /* =========================================================
-   v11 — WORKOUT PLANS (Home · Gym · Personalized), SAVED PLAN, SET PLAYER
+   v12 — BALANCED PLANS from your own videos · Personalized (G) & (M) · Master
    ========================================================= */
-/* ---------- exercise pools ---------- */
+/* ---------- v12 · exercise pools (ONLY exercises that have a video) ---------- */
+/* entry 'Name' = pool's default source · 'bw|Name' / 'bd|Name' / 'gy|Name' = override */
 const GYP = {
-  squat: ['Goblet Squat', 'Leg Press', 'Barbell Back Squat', 'Hack Squat Machine', 'Smith Machine Squat'],
-  lunge: ['Dumbbell Reverse Lunge', 'Bulgarian Split Squat', 'Dumbbell Walking Lunge', 'Dumbbell Step-Up'],
-  hinge: ['Dumbbell Romanian Deadlift', 'Barbell Hip Thrust', 'Trap Bar Deadlift', 'Barbell Romanian Deadlift'],
-  legcurl: ['Seated Leg Curl Machine', 'Lying Leg Curl Machine', 'Cable Pull-Through'],
-  legext: ['Leg Extension Machine', 'Single-Leg Leg Press'],
-  glute: ['Hip Abduction Machine', 'Cable Glute Kickback', 'Back Extension (45° Hyperextension)'],
-  calf: ['Standing Calf Raise Machine', 'Seated Calf Raise Machine'],
-  hpush: ['Machine Chest Press', 'Dumbbell Bench Press', 'Barbell Bench Press', 'Smith Machine Bench Press'],
+  squat: ['Goblet Squat', 'Leg Press', 'Hack Squat Machine', 'Belt Squat Machine', 'Dumbbell Sumo Squat', 'Barbell Front Squat', 'Barbell Back Squat'],
+  lunge: ['Dumbbell Reverse Lunge', 'Dumbbell Forward Lunge', 'bw|Bulgarian Squat'],
+  hinge: ['Dumbbell Romanian Deadlift', 'Machine Hip Thrust', 'Barbell Hip Thrust', 'Barbell Romanian Deadlift'],
+  legcurl: ['Lying Leg Curl Machine', 'Standing Single-Leg Curl Machine', 'Nordic Hamstring Curl (assisted)'],
+  legext: ['Leg Extension Machine'],
+  glute: ['Cable Glute Kickback', 'Cable Hip Abduction (standing)', 'Hip Adduction Machine'],
+  calf: ['Standing Calf Raise Machine', 'Seated Calf Raise', 'Leg Press Calf Raise', 'Single-Leg Dumbbell Calf Raise'],
+  hpush: ['Machine Chest Press', 'Dumbbell Bench Press', 'Barbell Bench Press', 'Decline Dumbbell Press', 'Decline Barbell Bench Press'],
   ipush: ['Incline Dumbbell Press', 'Incline Machine Chest Press', 'Incline Barbell Bench Press'],
-  fly: ['Pec Deck Machine', 'Cable Crossover (high to low)', 'Low Cable Fly (low to high)', 'Dumbbell Chest Fly'],
-  vpull: ['Lat Pulldown (wide grip)', 'Close-Grip Lat Pulldown (V-bar)', 'Assisted Pull-Up Machine', 'Underhand Lat Pulldown'],
-  hpull: ['Seated Cable Row', 'Machine Row (chest-supported)', 'One-Arm Dumbbell Row', 'Chest-Supported Dumbbell Row', 'T-Bar Row'],
-  vpush: ['Seated Dumbbell Shoulder Press', 'Machine Shoulder Press', 'Arnold Press', 'Landmine Press'],
-  delt: ['Dumbbell Lateral Raise', 'Cable Lateral Raise', 'Machine Lateral Raise'],
-  rear: ['Face Pull', 'Reverse Pec Deck (rear delt)', 'Bent-Over Dumbbell Reverse Fly'],
-  bi: ['Dumbbell Biceps Curl', 'Hammer Curl', 'Cable Biceps Curl', 'Incline Dumbbell Curl', 'EZ-Bar Curl'],
-  tri: ['Cable Triceps Pushdown (rope)', 'Overhead Cable Triceps Extension', 'Dumbbell Skull Crusher', 'Triceps Dip Machine'],
-  core: ['Plank', 'Dead Bug', 'Cable Pallof Press', 'Cable Crunch (kneeling)', 'Hanging Knee Raise', 'Side Plank'],
-  cond: ['Rowing Machine (Concept2 rower)', 'Kettlebell Swing (two hands)', 'Assault Bike / Air Bike', 'Medicine Ball Slam', 'Battle Ropes Alternating Waves', 'Dumbbell Squat to Press', 'Ski Erg', 'Farmer\'s Carry'],
+  fly: ['Dumbbell Chest Fly', 'Low Cable Fly (low to high)', 'Incline Dumbbell Fly', 'Chest Dip (assisted machine)'],
+  vpull: ['Lat Pulldown (wide grip)', 'Close-Grip Lat Pulldown (V-bar)', 'Assisted Pull-Up Machine', 'Straight-Arm Cable Pulldown', 'Chin-Up', 'Pull-Up'],
+  hpull: ['Seated Cable Row', 'Machine Row (chest-supported)', 'One-Arm Dumbbell Row', 'Inverted Row (Smith machine)', 'T-Bar Row', 'Barbell Bent-Over Row'],
+  vpush: ['Seated Dumbbell Shoulder Press', 'Machine Shoulder Press', 'Arnold Press', 'Landmine Press', 'Standing Barbell Overhead Press'],
+  delt: ['Dumbbell Lateral Raise', 'Cable Lateral Raise', 'Machine Lateral Raise', 'Dumbbell Front Raise'],
+  rear: ['Face Pull', 'Bent-Over Dumbbell Reverse Fly', 'Dumbbell Shrug'],
+  bi: ['Dumbbell Biceps Curl', 'Hammer Curl', 'Cable Biceps Curl', 'Preacher Curl Machine', 'Incline Dumbbell Curl', 'EZ-Bar Curl', 'Concentration Curl', 'Barbell Curl'],
+  tri: ['Cable Triceps Pushdown (straight bar)', 'Overhead Cable Triceps Extension', 'Dumbbell Triceps Kickback', 'Cable Skull Crusher', 'Overhead Dumbbell Triceps Extension', 'Dumbbell Skull Crusher', 'Close-Grip Bench Press'],
+  lowback: ['Back Extension (45° Hyperextension)', 'bw|Bird Dog', 'Reverse Hyperextension Machine', 'bw|Superman', 'bw|Swimmer', 'bw|Reverse Plank', 'bw|Bridges', 'bd|Backward Glute Raises'],
+  core: ['bw|Plank', 'bw|Supine Marching', 'bw|Side Plank', 'bw|Heel Touches', 'bw|Shoulder Tap Plank', 'bw|Alternating Leg Raises', 'bw|Easy Side Plank', 'bw|Bicycle Crunches', 'bw|Two Point Plank', 'bw|Elbow to the Knee', 'bw|Russian Twist', 'bw|Crunches'],
 };
-const GY_COMPOUND = new Set(['squat', 'lunge', 'hinge', 'hpush', 'ipush', 'vpull', 'hpull', 'vpush']);
-const GY_TIMED = new Set(['Plank', 'Side Plank', 'Dead Bug']);
-const BDP = {
-  push: ['Chest Press', 'Chest Fly', 'Chest Crossover'],
-  hpull: ['Upper Back Row', 'Seated Row', 'Archer'],
-  vpull: ['Overhead Pulldown', 'Pull-Aparts', 'Reverse Fly'],
-  sh: ['Shoulder Front Raise', 'Upright Raises', 'Squat & Press'],
-  bi: ['Bicep Curls', 'Hammer Grip Curls', 'Concentration Curl', 'Wide Curl', 'Reverse Curl', 'Drag Curl', '21s Curl', 'Single Arm Curl', 'High Curl', 'Bicep Side Pull'],
-  tri: ['Triceps Extension', 'Tricep Pulls', 'Triceps Kickback', 'Skull Crusher', 'Close-Grip Press', 'Triceps Pushdown', 'Single Arm Overhead Extension'],
-  legs: ['Squats', 'Resisted Lunge', 'Overhead Squat', 'Side Lunges'],
-  glute: ['Glute Bridge', 'Backward Glute Raises', 'Clamshell', 'Outer Thigh Raises'],
+/* home pools: bands + bodyweight, same slot names so every template works at home too */
+const HMP = {
+  squat: ['bd|Squats', 'bw|Squats', 'bd|Overhead Squat', 'bw|Wall Sit', 'bw|Squat & Reach', 'bw|Toe Touch Squat', 'bw|Back & Forth Squat'],
+  lunge: ['bd|Resisted Lunge', 'bw|Rear Lunges', 'bd|Side Lunges', 'bw|Lunges', 'bw|Bulgarian Squat', 'bw|Side Lunge March'],
+  hinge: ['bd|Glute Bridge', 'bw|Bridge Marching', 'bw|Bridge Kick', 'bw|Bridge Kicker'],
+  legcurl: ['bw|Hamstring Kickback', 'bw|Back Plank & Kick', 'bw|Single Leg Runner'],
+  legext: ['bw|Wall Sit', 'bw|Ski Sit'],
+  glute: ['bd|Clamshell', 'bd|Backward Glute Raises', 'bd|Outer Thigh Raises', 'bw|Side Leg Lift', 'bw|Inner Thigh Raises', 'bw|Outer Thigh Raises'],
+  calf: ['bw|Single Calf Raises'],
+  hpush: ['bd|Chest Press', 'bw|Push-Ups', 'bw|Incline Push-Ups', 'bw|Wide Arm Push-Ups', 'bw|Shoulder Tap Push-Ups'],
+  ipush: ['bw|Decline Push-Ups', 'bd|Chest Crossover', 'bw|Hindu Push-Ups'],
+  fly: ['bd|Chest Fly', 'bd|Chest Crossover', 'bw|Narrow Push-Ups'],
+  vpull: ['bd|Overhead Pulldown', 'bd|Pull-Aparts', 'bw|Y Raise'],
+  hpull: ['bd|Upper Back Row', 'bd|Seated Row', 'bd|Archer', 'bw|Air Row'],
+  vpush: ['bd|Squat & Press', 'bw|Shoulder Push-Ups', 'bd|Upright Raises'],
+  delt: ['bd|Shoulder Front Raise', 'bd|Upright Raises', 'bw|T Raise'],
+  rear: ['bd|Reverse Fly', 'bd|Squat & Reverse Fly', 'bd|Pull-Aparts', 'bw|T Raise'],
+  bi: ['bd|Bicep Curls', 'bd|Hammer Grip Curls', 'bd|Concentration Curl', 'bd|Wide Curl', 'bd|Reverse Curl', 'bd|Drag Curl', 'bd|21s Curl', 'bd|Single Arm Curl', 'bd|High Curl', 'bd|Bicep Side Pull'],
+  tri: ['bd|Triceps Extension', 'bd|Tricep Pulls', 'bd|Triceps Kickback', 'bd|Skull Crusher', 'bd|Close-Grip Press', 'bd|Triceps Pushdown', 'bd|Single Arm Overhead Extension', 'bw|Diamond Push-Ups', 'bw|Tricep Pikes'],
+  lowback: ['bw|Bird Dog', 'bw|Superman', 'bw|Swimmer', 'bw|Reverse Plank', 'bw|Bridges', 'bd|Backward Glute Raises', 'bw|Back Plank & Kick', 'bw|Bridge Marching', 'bw|Table Pose'],
+  core: ['bw|Plank', 'bd|Core Resistance Twist', 'bw|Side Plank', 'bw|Bicycle Crunches', 'bw|Heel Touches', 'bw|Russian Twist', 'bw|Leg Lifts', 'bw|Supine Marching', 'bw|Shoulder Tap Plank', 'bw|Crunches', 'bw|Elbow to the Knee', 'bw|Seated Core Twist'],
+  cardio: ['bw|Mountain Walkers', 'bw|Step Touch', 'bw|Standing Crawl Stroke', 'bw|Jumping Jacks', 'bw|High Knees', 'bw|Mountain Climbers', 'bw|Skaters', 'bw|Butt Kicks', 'bw|Low Jacks', 'bw|Plank Jacks'],
 };
-const BWP = {
-  core: ['Plank', 'Bird Dog', 'Russian Twist', 'Bicycle Crunches', 'Dead Bug', 'Leg Lifts', 'Side Plank', 'Heel Touches'],
-  push: ['Incline Push-Ups', 'Push-Ups', 'Wide Arm Push-Ups', 'Shoulder Tap Push-Ups', 'Diamond Push-Ups', 'Hindu Push-Ups'],
-  legs: ['Squats', 'Lunges', 'Rear Lunges', 'Side Lunge March', 'Bulgarian Squat', 'Wall Sit', 'Squat & Reach'],
-  glute: ['Bridges', 'Bridge Marching', 'Hamstring Kickback', 'Bridge Kick', 'Back Plank & Kick'],
-  back: ['Superman', 'Swimmer', 'Y Raise', 'T Raise', 'Air Row'],
-  cardio: ['Mountain Walkers', 'Step Touch', 'Standing Crawl Stroke', 'Mountain Climbers', 'Skaters', 'High Knees'],
-};
+/* Master exercises without their own video → closest video you have */
+const MASTER_VID = { 'prayer bench press': 'gy:dumbbell bench press', 'plate press': 'gy:dumbbell chest fly', 'standing arm swings': 'bw:forward arm circles', 'dumbbell walking lunge': 'gy:dumbbell forward lunge', 'cable crossover': 'gy:low cable fly', 'box deadlift': 'gy:conventional barbell deadlift', 'rack pulls': 'gy:conventional barbell deadlift', 'trap bar deadlift': 'gy:conventional barbell deadlift', 'reverse-grip ez-bar curl': 'gy:ez-bar curl', 'bench press with 4-second pause at the bottom': 'gy:barbell bench press', 'pullover': 'gy:straight-arm cable pulldown', 'barbell shrug': 'gy:barbell shrug back' };
+/* extra home options, used only when a slot’s main list is used up that week */
+const HMP_X = { vpush: ['bw|Tricep Pikes', 'bd|Shoulder Front Raise', 'bw|Hindu Push-Ups'], calf: ['bw|Low Jacks', 'bw|One Leg Side Hops', 'bw|Jumping Jacks'], lunge: ['bw|Heisman Lunges', 'bw|Low Runner'], squat: ['bw|Bouncing Squat', 'bw|Punching Squats'], legext: ['bw|Wall Sit', 'bw|Ski Sit'], delt: ['bw|Shoulder Push-Ups', 'bd|Squat & Press', 'bw|Extended Arm Circles', 'bw|Overhead Clap'], rear: ['bw|Standing Butterfly Stroke', 'bw|Scapular Planks', 'bw|Y Raise', 'bw|Air Row'], vpull: ['bd|Reverse Fly', 'bw|T Raise'], fly: ['bw|Wide Arm Push-Ups'], glute: ['bw|Bridge Kick', 'bw|Hamstring Kickback'], hinge: ['bw|Bridges', 'bw|Abdominal Hip Raises'] };
+const FIN_SOFT = ['Mountain Walkers', 'Step Touch', 'Low Jacks', 'Standing Crawl Stroke', 'Butt Kicks', 'Standing Butterfly Stroke', 'High Knees', 'Squat & Reach'];
+const FIN_HARD = ['Mountain Climbers', 'Jumping Jacks', 'Skaters', 'Plank Jacks', 'Burpees', 'Jump Squats', 'High Knees', 'Squat & Knee Kick'];
+/* back care: no heavy spinal loading for Personalized (G) beginner / intermediate */
+const AVOID_BACK = ['Barbell Back Squat', 'Barbell Front Squat', 'Barbell Romanian Deadlift', 'Barbell Bent-Over Row', 'T-Bar Row', 'Standing Barbell Overhead Press'];
+const AVOID_NEW = ['Nordic Hamstring Curl (assisted)', 'Pull-Up', 'Chin-Up', 'Inverted Row (Smith machine)', 'Decline Barbell Bench Press', 'Incline Barbell Bench Press', 'Close-Grip Bench Press'];
 const COMPOUND = {
   A: { name: 'Compound A · Gentle', items: ['Squat & Reach', 'Incline Push-Ups', 'Side Lunge March', 'Walking Plank', 'Mountain Walkers', 'Step Touch'] },
   B: { name: 'Compound B · Balanced', items: ['Punching Squats', 'Shoulder Tap Push-Ups', 'Back Plank & Kick', 'Squat & Knee Kick', 'Crab Walk', 'Standing Crawl Stroke'] },
@@ -2808,143 +2821,217 @@ const COMPOUND = {
 };
 const ex = (n, k = 'gy', o = {}) => Object.assign({ n, v: k + ':' + vNorm(n) }, o);
 const pick = (pool, i) => pool[((i % pool.length) + pool.length) % pool.length];
-const SCHED = { 1: [1], 2: [1, 4], 3: [1, 3, 5], 4: [1, 2, 4, 5], 5: [1, 2, 3, 4, 5] };
+const pe = (s, def) => { const m = /^(bw|bd|gy)\|(.+)$/.exec(s); return m ? { k: m[1], n: m[2] } : { k: def, n: s }; };
+const SCHED = { 1: [1], 2: [1, 4], 3: [1, 3, 5], 4: [1, 2, 4, 5], 5: [1, 2, 3, 4, 5], 6: [1, 2, 3, 4, 5, 6], 7: [0, 1, 2, 3, 4, 5, 6] };
 
-/* ---------- session builders ---------- */
-const timedSession = (title, names, o = {}) => ({ title, mode: 'timed', warm: o.warm !== false, work: o.work || 40, rest: o.rest || 20, rounds: o.rounds || 3, roundRest: o.roundRest || 60, items: names.map(n => typeof n === 'string' ? ex(n, o.k || 'bw') : n), mins: o.mins });
-function gymSession(title, slots, opt) {
-  // opt: {variant, block, sets, reps, isoReps, rest, isoRest, finisher}
-  const used = {};
-  const items = slots.map(slot => {
-    const n = used[slot] = (used[slot] || 0);
-    used[slot]++;
-    const name = pick(GYP[slot], opt.variant + opt.block * 2 + n);
-    const comp = GY_COMPOUND.has(slot), timed = GY_TIMED.has(name);
-    return ex(name, 'gy', { sets: opt.sets, reps: timed ? '30–45 s' : comp ? opt.reps : opt.isoReps, rest: comp ? opt.rest : opt.isoRest });
-  });
-  const s = { title, mode: 'sets', items };
-  if (opt.finisher) s.finisher = { work: 40, rest: 20, rounds: opt.finisher, items: [0, 1].map(i => ex(pick(GYP.cond, opt.variant * 2 + opt.block + i), 'gy')) };
+/* ---------- templates (legs −40 %, lower back every session, extra arms) ---------- */
+const TPL = {
+  pgU: [['hpush', 'vpull', 'vpush', 'hpull', 'bi', 'tri', 'lowback'], ['hpush', 'vpull', 'ipush', 'hpull', 'delt', 'bi', 'tri', 'lowback'], ['hpush', 'vpull', 'ipush', 'hpull', 'vpush', 'delt', 'bi', 'tri', 'lowback']],
+  pgL: [['squat', 'hinge', 'legcurl', 'glute', 'lowback', 'lowback', 'core'], ['squat', 'hinge', 'legcurl', 'glute', 'calf', 'lowback', 'lowback', 'core'], ['squat', 'hinge', 'lunge', 'legcurl', 'glute', 'lowback', 'lowback', 'core', 'core']],
+  pgF: [['squat', 'hpush', 'hpull', 'delt', 'bi', 'tri', 'lowback', 'core'], ['lunge', 'hpush', 'hpull', 'vpush', 'bi', 'tri', 'lowback', 'core'], ['squat', 'hpush', 'vpull', 'rear', 'bi', 'tri', 'bi', 'tri', 'lowback']],
+};
+const GYM_SPLITS = {
+  2: [['Full Body A', 'F', ['squat', 'hpush', 'hpull', 'vpush', 'bi', 'tri', 'lowback', 'core']], ['Full Body B', 'F', ['hinge', 'ipush', 'vpull', 'delt', 'bi', 'tri', 'lowback', 'core']]],
+  3: [['Upper Body', 'U', TPL.pgU[1]], ['Lower + Back care', 'L', TPL.pgL[1]], ['Full Body + Arms', 'F', TPL.pgF[1]]],
+  4: [['Upper A', 'U', ['hpush', 'vpull', 'vpush', 'hpull', 'bi', 'tri', 'lowback']], ['Lower + Back care', 'L', ['squat', 'hinge', 'legcurl', 'glute', 'calf', 'lowback', 'lowback', 'core']], ['Upper B', 'U', ['ipush', 'hpull', 'delt', 'vpull', 'fly', 'bi', 'tri', 'lowback']], ['Full Body + Arms', 'F', ['lunge', 'hpush', 'hpull', 'vpush', 'bi', 'tri', 'lowback', 'core']]],
+  5: [['Upper Body', 'U', ['hpush', 'vpull', 'vpush', 'hpull', 'bi', 'tri', 'lowback']], ['Lower + Back care', 'L', ['squat', 'hinge', 'legcurl', 'glute', 'lowback', 'lowback', 'core']], ['Push + Arms', 'P', ['ipush', 'fly', 'delt', 'tri', 'bi', 'lowback', 'core']], ['Pull + Back', 'B', ['vpull', 'hpull', 'rear', 'bi', 'lowback', 'core']], ['Full Body', 'F', ['squat', 'hpush', 'hpull', 'vpush', 'tri', 'bi', 'lowback']]],
+  6: [['Push A', 'P', ['hpush', 'ipush', 'vpush', 'delt', 'tri', 'tri', 'lowback']], ['Pull A', 'B', ['vpull', 'hpull', 'rear', 'bi', 'bi', 'lowback', 'core']], ['Lower + Back care', 'L', ['squat', 'hinge', 'legcurl', 'glute', 'calf', 'lowback', 'core']], ['Push B', 'P', ['hpush', 'fly', 'vpush', 'delt', 'tri', 'lowback']], ['Pull B', 'B', ['vpull', 'hpull', 'rear', 'bi', 'lowback', 'core']], ['Full Body + Arms', 'F', ['lunge', 'hpush', 'hpull', 'bi', 'tri', 'lowback', 'core']]],
+};
+const PM_SPLIT = { 3: ['upper', 'lower', 'full'], 4: ['upper', 'lower', 'full', 'core'], 5: ['upper', 'lower', 'full', 'core', 'full'], 6: ['upper', 'lower', 'full', 'upper', 'lower', 'full'] };
+const PM_SLOTS = {
+  gym: { upper: ['hpush', 'vpull', 'vpush', 'hpull', 'delt', 'bi', 'tri', 'rear', 'fly'], lower: ['squat', 'hinge', 'lunge', 'legcurl', 'glute', 'calf', 'legext', 'glute', 'core'], full: ['squat', 'hpush', 'hpull', 'hinge', 'vpush', 'vpull', 'lunge', 'core', 'bi'], core: ['core', 'core', 'glute', 'core', 'core', 'hinge', 'core', 'core', 'glute'] },
+  home: { upper: ['hpush', 'hpull', 'vpush', 'vpull', 'bi', 'tri', 'fly', 'delt', 'rear', 'cardio'], lower: ['squat', 'hinge', 'lunge', 'glute', 'legcurl', 'cardio', 'squat', 'glute', 'calf', 'core'], full: ['squat', 'hpush', 'hpull', 'hinge', 'vpush', 'cardio', 'lunge', 'core', 'bi', 'tri'], core: ['core', 'core', 'glute', 'core', 'cardio', 'core', 'hinge', 'core', 'cardio', 'core'] },
+};
+const PM_TITLE = { upper: 'Upper Body', lower: 'Lower Body', full: 'Full Body', core: 'Core & Back' };
+
+/* ---------- week builder: no exercise repeats inside the same week ---------- */
+function fillDays(days, pools, offset, avoid = [], def = 'gy', fb = null) {
+  const used = new Set(), cnt = {}, av = new Set(avoid);
+  return days.map(slots => slots.map(slot => {
+    const pool = (pools[slot] || []).filter(e => !av.has(pe(e, def).n));
+    const c = cnt[slot] = (cnt[slot] || 0); cnt[slot]++;
+    for (let j = 0; j < pool.length; j++) { const e = pe(pool[(offset + c + j) % pool.length], def); if (!used.has(e.k + e.n)) { used.add(e.k + e.n); return Object.assign(e, { slot }); } }
+    const alt = (fb && fb[slot]) || [];
+    for (let j = 0; j < alt.length; j++) { const e = pe(alt[(offset + c + j) % alt.length], 'bw'); if (!used.has(e.k + e.n)) { used.add(e.k + e.n); return Object.assign(e, { slot }); } }
+    return Object.assign(pe(pick(pool, offset + c), def), { slot, dup: true });
+  }));
+}
+const COMP_SLOTS = new Set(['squat', 'lunge', 'hinge', 'hpush', 'ipush', 'vpull', 'hpull', 'vpush']);
+function repsFor(e, par) {
+  if (/^(Plank|Easy Side Plank|Two Point Plank|Reverse Plank|Wall Sit|Swimmer|Ski Sit)$/.test(e.n)) return { reps: '30–40 s', timed: 1 };
+  if (e.n === 'Side Plank') return { reps: '20–30 s', timed: 1, note: 'each side' };
+  if (e.n === 'Bird Dog') return { reps: '8', note: 'each side' };
+  if (e.slot === 'core') return { reps: '15–20' };
+  if (e.slot === 'lowback') return { reps: e.k === 'gy' ? par.isoReps : '12–15', note: 'slow & controlled' };
+  return { reps: COMP_SLOTS.has(e.slot) ? par.reps : par.isoReps };
+}
+function setsSession(title, tag, list, par) {
+  const items = list.map(e => { const r = repsFor(e, par), comp = COMP_SLOTS.has(e.slot); return ex(e.n, e.k, { sets: comp ? par.sets : (par.isoSets || par.sets), reps: r.reps, note: r.note, rest: comp ? par.rest : par.isoRest, slot: e.slot }); });
+  const s = { title, tag, mode: 'sets', items };
+  if (par.finisher > 0) { const pool = par.hard ? FIN_HARD : FIN_SOFT, o = (par.offset || 0) * 2 + (par.di || 0) * 2; s.finisher = { work: 40, rest: 20, rounds: par.finisher, items: [0, 1].map(i => ex(pick(pool, o + i), 'bw')) }; }
   return s;
 }
-function bandSession(title, slots, opt) {
-  const used = {};
-  return { title, mode: 'sets', items: slots.map(slot => { const [src, key] = slot.split('.'); const pool = src === 'bw' ? BWP[key] : BDP[key]; const n = used[slot] = (used[slot] || 0); used[slot]++; const name = pick(pool, opt.variant + n * 2 + opt.week); const timed = /Plank|Wall Sit|Bird Dog/.test(name); return ex(name, src === 'bw' ? 'bw' : 'bd', { sets: opt.sets, reps: timed ? '30–40 s' : opt.reps, rest: opt.rest }); }) };
-}
-const T = {
-  full: ['squat', 'hpush', 'hpull', 'hinge', 'vpush', 'vpull', 'core'],
-  upper: ['hpush', 'vpull', 'vpush', 'hpull', 'fly', 'bi', 'tri'],
-  lower: ['squat', 'hinge', 'lunge', 'legcurl', 'glute', 'calf', 'core'],
-  push: ['hpush', 'ipush', 'vpush', 'delt', 'fly', 'tri'],
-  pull: ['vpull', 'hpull', 'hpull', 'rear', 'bi', 'bi', 'core'],
-  legs: ['squat', 'hinge', 'lunge', 'legext', 'legcurl', 'glute', 'calf'],
-};
-const SPLITS = {
-  3: [['Full Body A', 'full', 0], ['Full Body B', 'full', 1], ['Full Body C', 'full', 2]],
-  4: [['Upper A', 'upper', 0], ['Lower A', 'lower', 0], ['Upper B', 'upper', 1], ['Lower B', 'lower', 1]],
-  5: [['Upper', 'upper', 0], ['Lower', 'lower', 0], ['Push', 'push', 1], ['Pull', 'pull', 1], ['Legs', 'legs', 1]],
-};
-function gymParams(goal, wi, weeks) {
-  const block = Math.floor(wi / 4), deload = weeks > 4 && (wi % 4) === 3;
-  const lose = goal === 'lose';
-  const reps = lose ? ['12–15', '10–12', '10–12'][block] : ['10–12', '8–10', '6–8'][block];
-  const isoReps = lose ? '15' : ['12–15', '10–12', '10–12'][block];
-  const sets = deload ? 2 : (wi < 1 ? 2 : lose ? 3 : block === 0 ? 3 : 4);
-  return { block, sets, reps, isoReps, rest: lose ? 75 : 120, isoRest: lose ? 45 : 75, finisher: lose ? (deload ? 2 : 3) : 0, deload };
-}
+const timedSession = (title, names, o = {}) => ({ title, tag: o.tag, mode: 'timed', warm: o.warm !== false, work: o.work || 40, rest: o.rest || 20, rounds: o.rounds || 3, roundRest: o.roundRest || 60, items: names.map(n => typeof n === 'string' ? ex(n, o.k || 'bw') : n), mins: o.mins });
+const STRETCH_SESSION = code => timedSession(code === 'S1' ? 'Stretch & Recovery · Yoga flow' : 'Stretch & Recovery · Full body', PROG[code], { work: 45, rest: 5, rounds: 1, warm: false, tag: 'S' });
+const compoundSession = (key, o = {}) => timedSession(COMPOUND[key].name + (o.suffix || ''), COMPOUND[key].items, Object.assign({ tag: 'C' }, o));
 
-/* ---------- plans ---------- */
-const PLAN_KINDS = {
-  'home-compound': 'Home · Compound', 'home-bands': 'Home · Elastic bands', 'reset4': 'Home · RESET classic',
-  gym: 'Gym', anatoly: 'Gym · Anatoly', pg: 'Personalized (G)', pm: 'Personalized (M)',
-};
-const STRETCH_SESSION = code => timedSession(code === 'S1' ? 'Stretch & Recovery · Yoga flow' : 'Stretch & Recovery · Full body', PROG[code], { work: 45, rest: 5, rounds: 1, warm: false });
+/* ---------- plan meta ---------- */
+const PLAN_KINDS = { 'home-compound': 'Home · Compound', 'home-bands': 'Home · Elastic bands', 'reset4': 'Home · RESET classic', gym: 'Gym', pg: 'Personalized (G)', pm: 'Personalized (M)' };
+const LEVELS = ['beginner', 'intermediate', 'advanced'];
+const PG_LEN = { '4w': 4, '8w': 8, '12w': 12, '180d': 26, '360d': 52 };
+const LEN_LABEL = { 1: '1 week', 2: '2 weeks', 4: '4 weeks', 8: '8 weeks', 12: '12 weeks', 26: '6 months', 52: '1 year', '4w': '4 weeks', '8w': '8 weeks', '12w': '12 weeks', '180d': '180 days', '360d': '360 days' };
 function planWeeks(p) {
-  if (p.kind === 'gym' || p.kind === 'pm' && p.len !== 'day' && p.len !== 'week') return +p.weeks || (p.len === '8w' ? 8 : 4);
-  if (p.kind === 'home-bands') return 4;
-  if (p.kind === 'pg' || p.kind === 'anatoly') return 8;
+  if (p.kind === 'gym' || p.kind === 'home-bands') return +p.weeks || 4;
+  if (p.kind === 'pg') return p.level === 'master' ? 8 : PG_LEN[p.len] || 8;
+  if (p.kind === 'pm') return p.len === '8w' ? 8 : p.len === '4w' ? 4 : 1;
   if (p.kind === 'reset4') return 4;
   return 1;
 }
 function planSchedule(p) {
   if (p.kind === 'pg') return [1, 2, 3, 4, 5];
-  if (p.kind === 'home-compound') return SCHED[+p.days || 3];
-  if (p.kind === 'pm' && p.len === 'day') return [0, 1, 2, 3, 4, 5, 6];
+  if (p.kind === 'home-compound') return +p.days === 1 ? SCHED[7] : SCHED[+p.days || 3];
+  if (p.kind === 'pm' && p.len === 'day') return SCHED[7];
   return SCHED[+p.days || 3];
 }
-/* returns {session, week, weeks, round} or {rest:true,...} for a date */
+const lightKey = (p, mon) => mon + '|' + p.kind + '|' + (p.level || p.goal || '') + '|' + p.start;
+const lightOn = (p, wAbs) => !!(S.profile.lightWk && S.profile.lightWk === lightKey(p, addD(p.start, wAbs * 7)));
+
+/* Personalized (G): level climbs by itself in 180 / 360-day plans (every 13 weeks) */
+function pgState(p, wAbs) {
+  const weeks = planWeeks(p), wi = ((wAbs % weeks) + weeks) % weeks, L0 = Math.max(0, LEVELS.indexOf(p.level));
+  const auto = p.len === '180d' || p.len === '360d';
+  const L = auto ? Math.min(2, L0 + Math.floor(Math.max(0, wAbs) / 13)) : L0;
+  let phase;
+  if (p.len === '4w') phase = wi < 2 ? 'Adaptation' : 'Progression';
+  else if (p.len === '8w') phase = ['Base', 'Build'][Math.floor(wi / 4)];
+  else if (p.len === '12w' || (p.len === '180d' && wi < 12)) phase = ['Base', 'Build', 'Strength'][Math.floor(wi / 4)];
+  else if (p.len === '180d') phase = ['Volume', 'Strength', 'Fat burn', 'Back & core'][Math.floor((wi - 12) / 4) % 4];
+  else phase = ['Fundamentals', 'Muscle', 'Strength', 'Definition'][Math.min(3, Math.floor(wi / 13))];
+  const rotation = auto && wAbs >= 12;
+  const fixedLight = L === 0 && !rotation && wi % 4 === 3;
+  const light = fixedLight || (!fixedLight && L > 0 && lightOn(p, wAbs));
+  return { wi, L, level: LEVELS[L], phase, light, fixedLight, rotation };
+}
+function phaseParams(phase, L) {
+  const P = { reps: '10–12', isoReps: '12–15', rest: 90, isoRest: 60, fin: 0 };
+  if (/Base|Adaptation|Fundamentals/.test(phase)) Object.assign(P, { reps: '12–15' });
+  if (phase === 'Strength') Object.assign(P, { reps: L ? '6–8' : '8–10', isoReps: '10–12', rest: 150, isoRest: 75 });
+  if (/Fat burn|Definition/.test(phase)) Object.assign(P, { reps: '12–15', isoReps: '15', rest: 60, isoRest: 45, fin: 1 });
+  return P;
+}
+function pgWeek(p, wAbs) {
+  const st = pgState(p, wAbs), L = st.L, blk = Math.floor(Math.max(0, wAbs) / 4);
+  const P = phaseParams(st.phase, L);
+  let sets = L === 0 ? (wAbs < 2 ? 2 : 3) : 3, isoSets = sets;
+  if (L === 2) { sets = 4; isoSets = 3; }
+  if (st.light) { sets = Math.max(2, sets - 1); isoSets = Math.max(2, isoSets - 1); }
+  const fin = st.light ? 0 : [0, 2, 3][L] + P.fin;
+  const avoid = L === 0 ? AVOID_BACK.concat(AVOID_NEW) : L === 1 ? AVOID_BACK : ['Barbell Bent-Over Row'];
+  const tpl = [TPL.pgU[L], TPL.pgL[L], TPL.pgF[L]].map(t => st.phase === 'Back & core' ? t.concat(['lowback', 'core']) : t);
+  const lists = fillDays(tpl, GYP, blk, avoid, 'gy', HMP);
+  const sfx = st.light ? ' · lighter week' : '';
+  const gymDays = [['Upper Body', 'U'], ['Lower + Back care', 'L'], ['Full Body + Arms', 'F']].map(([t, tag], di) => setsSession(t + sfx, tag, lists[di], Object.assign({}, P, { sets, isoSets, finisher: fin, hard: L === 2, offset: blk, di })));
+  const home = pgHome(L, st.wi, st.light);
+  return { st, days: { 1: gymDays[0], 2: home.stretch, 3: gymDays[1], 4: home.comp, 5: gymDays[2] } };
+}
+function pgHome(L, wi, light) {
+  const stretch = STRETCH_SESSION(wi % 2 ? 'S2' : 'S1');
+  const key = [['A', 'A'], ['A', 'B'], ['B', 'C'], ['C', 'B']][L][wi % 2];
+  const o = [{ rounds: 2 }, { rounds: 3 }, { rounds: 4, work: 45, rest: 15 }, { rounds: 4, work: 45, rest: 15 }][L];
+  return { stretch, comp: compoundSession(key, Object.assign({}, o, light ? { rounds: Math.max(2, o.rounds - 1) } : {}, { suffix: ' · Full compound' })) };
+}
+function masterWeek(p, wAbs) {
+  const wi = ((wAbs % 8) + 8) % 8, data = S.customPrograms?.anatoly, days = {};
+  [1, 3, 5].forEach(d => {
+    const day = data?.weeks?.[wi]?.[String(d)];
+    days[d] = day ? { title: day.title, tag: 'M', mode: 'sets', items: day.items.map(it => { const b = vNorm(String(it.v || '').slice(3)); return Object.assign({}, it, { v: MASTER_VID[b] || String(it.v || 'gy:').slice(0, 3) + b }); }) } : null;
+  });
+  const home = pgHome(3, wi, false); days[2] = home.stretch; days[4] = home.comp;
+  return { st: { wi, phase: 'Powerbuilding', level: 'master' }, days, missing: !data };
+}
+function gymParams(p, wAbs) {
+  const weeks = planWeeks(p), wi = ((wAbs % weeks) + weeks) % weeks, lose = p.goal === 'lose', bands = p.kind === 'home-bands';
+  const rotation = wi >= 12, blk = Math.floor(wi / 4) % 3;
+  const deload = !rotation && weeks > 4 && wi % 4 === 3;
+  const light = deload || lightOn(p, wAbs);
+  let phase = rotation ? ['Volume', 'Strength', 'Mixed'][Math.floor((wi - 12) / 4) % 3] : ['Base', 'Build', 'Strength'][blk];
+  let reps = lose ? ['12–15', '10–12', '10–12'][blk] : ['10–12', '8–10', '6–8'][blk], isoReps = lose ? '15' : ['12–15', '10–12', '10–12'][blk];
+  if (rotation) { reps = { Volume: '10–12', Strength: lose ? '8–10' : '6–8', Mixed: '8–12' }[phase]; isoReps = phase === 'Strength' ? '10–12' : '12–15'; }
+  if (bands) { reps = ['15', '12–15', '12–15'][blk]; isoReps = '15'; if (rotation) reps = isoReps = phase === 'Strength' ? '10–12' : '15'; }
+  let sets = wAbs < 1 ? 2 : lose || bands ? 3 : blk === 0 && !rotation ? 3 : 4;
+  if (light) sets = Math.max(2, sets - 1);
+  return { wi, phase, light, deload, reps, isoReps, sets, rest: bands ? 45 : lose ? 75 : 120, isoRest: bands ? 30 : lose ? 45 : 75, finisher: !light && lose && !bands ? 3 : 0, hard: true };
+}
+function gymWeek(p, wAbs) {
+  const par = gymParams(p, wAbs), split = GYM_SPLITS[+p.days || 3] || GYM_SPLITS[3], blk = Math.floor(Math.max(0, wAbs) / 4), bands = p.kind === 'home-bands';
+  const lists = fillDays(split.map(x => x[2]), bands ? HMP : GYP, blk, bands ? [] : ['Nordic Hamstring Curl (assisted)'], bands ? 'bw' : 'gy', bands ? HMP_X : HMP);
+  const sched = planSchedule(p), days = {};
+  split.forEach(([t, tag], i) => { days[sched[i]] = setsSession(t + (par.light ? ' · lighter week' : ''), tag, lists[i], Object.assign({}, par, { offset: blk, di: i })); });
+  return { st: { wi: par.wi, phase: par.phase, light: par.light, fixedLight: par.deload }, days };
+}
+function pmBuild(p, focuses, offset, wi) {
+  const mins = +p.mins || 30, gym = p.place === 'gym', n = gym ? { 30: 5, 45: 7, 60: 9 }[mins] : { 30: 6, 45: 8, 60: 10 }[mins];
+  const tpl = focuses.map(f => PM_SLOTS[gym ? 'gym' : 'home'][f].slice(0, n));
+  const lists = fillDays(tpl, gym ? GYP : HMP, offset, gym ? AVOID_NEW : [], gym ? 'gy' : 'bw', gym ? HMP : HMP_X);
+  const seen = {};
+  return focuses.map((f, i) => {
+    const r = seen[f] = (seen[f] || 0); seen[f]++;
+    const title = `${PM_TITLE[f]}${focuses.filter(x => x === f).length > 1 || p.len === 'day' ? ' ' + 'ABC'[p.len === 'day' ? offset % 3 : r] : ''} · ${mins} min`;
+    if (gym) { const blk = Math.floor(wi / 4); return setsSession(title, f[0].toUpperCase(), lists[i], { sets: 3, reps: blk ? '8–10' : '10–12', isoReps: '12–15', rest: mins === 30 ? 60 : 90, isoRest: 45 }); }
+    const work = [30, 35, 40, 45][Math.min(3, Math.floor((wi % 4)))], rounds = { 30: 3, 45: 4, 60: 4 }[mins];
+    return timedSession(title, lists[i].map(e => ex(e.n, e.k)), { work, rest: 60 - work, rounds, tag: f[0].toUpperCase() });
+  });
+}
+function pmWeek(p, wAbs, k) {
+  const weeks = planWeeks(p), wi = ((wAbs % weeks) + weeks) % weeks;
+  if (p.len === 'day') { const s = pmBuild(p, [p.focus || 'full'], dayNum(k), wi)[0]; return { st: { wi }, days: { [dow(k)]: s } }; }
+  const split = PM_SPLIT[+p.days] || PM_SPLIT[3], sched = planSchedule(p), out = pmBuild(p, split, Math.floor(Math.max(0, wAbs) / 4), wi), days = {};
+  sched.forEach((d, i) => { if (out[i]) days[d] = out[i]; });
+  return { st: { wi }, days };
+}
+const _wkCache = new Map();
+function planWeek(p, wAbs, k) {
+  if (p.kind === 'pm' && p.len === 'day') return pmWeek(p, wAbs, k);
+  const key = JSON.stringify(p) + '|' + wAbs + '|' + (S.profile.lightWk || '') + '|' + (S.customPrograms?.anatoly ? 1 : 0);
+  if (_wkCache.has(key)) return _wkCache.get(key);
+  let w;
+  if (p.kind === 'pg') w = p.level === 'master' ? masterWeek(p, wAbs) : pgWeek(p, wAbs);
+  else if (p.kind === 'gym' || p.kind === 'home-bands') w = gymWeek(p, wAbs);
+  else if (p.kind === 'pm') w = pmWeek(p, wAbs, k);
+  if (_wkCache.size > 200) _wkCache.clear();
+  _wkCache.set(key, w); return w;
+}
+/* returns {session, week, weeks, round, st} or {rest:true,...} for a date */
 function planOn(p, k) {
   if (!p) return null;
-  const weeks = planWeeks(p), days = dayNum(k) - dayNum(p.start), wk = Math.floor(days / 7);
-  const wi = ((wk % weeks) + weeks) % weeks, round = Math.floor(Math.max(0, wk) / weeks) + 1, d = dow(k);
-  const base = { week: wi + 1, weeks, round };
+  const weeks = planWeeks(p), days = dayNum(k) - dayNum(p.start), wAbs = Math.floor(days / 7);
+  const wi = ((wAbs % weeks) + weeks) % weeks, round = Math.floor(Math.max(0, wAbs) / weeks) + 1, d = dow(k);
+  const base = { week: wi + 1, weeks, round, wAbs };
   if (p.kind === 'reset4') { const q = progInfo(k); return q.kind === 'rest' ? Object.assign(base, { rest: true }) : Object.assign(base, { legacy: q, session: { title: q.name } }); }
-  if (p.kind === 'anatoly') {
-    const data = S.customPrograms?.anatoly; if (!data) return Object.assign(base, { rest: true, missing: true });
-    const day = data.weeks[wi]?.[String(d)]; if (!day) return Object.assign(base, { rest: true });
-    return Object.assign(base, { session: { title: day.title, mode: 'sets', items: day.items.map(it => Object.assign({}, it, { n: it.n })) } });
-  }
-  const sched = planSchedule(p), idx = sched.indexOf(d);
-  if (idx < 0) return Object.assign(base, { rest: true });
-  let s = null;
-  if (p.kind === 'home-compound') { const key = 'ABC'[idx % 3]; s = timedSession(COMPOUND[key].name, COMPOUND[key].items); }
-  else if (p.kind === 'home-bands') {
-    const n = +p.days || 3, w = wi, sr = [['2', '15'], ['3', '12'], ['3', '15'], ['4', '12']][w];
-    const opt = { sets: +sr[0], reps: sr[1], rest: 45, week: w, variant: 0 };
-    const FB = ['bd.legs', 'bd.push', 'bd.hpull', 'bd.glute', 'bd.sh', 'bd.vpull', 'bw.core'], UP = ['bd.push', 'bd.hpull', 'bd.sh', 'bd.vpull', 'bd.bi', 'bd.tri', 'bw.push'], LO = ['bd.legs', 'bd.glute', 'bd.legs', 'bd.glute', 'bw.glute', 'bw.core'], ARMS = ['bd.sh', 'bd.bi', 'bd.tri', 'bd.sh', 'bd.bi', 'bd.tri', 'bw.core'];
-    const plan = n === 3 ? [['Full Body A', FB], ['Full Body B', FB], ['Full Body C', FB]] : n === 4 ? [['Upper A', UP], ['Lower A', LO], ['Upper B', UP], ['Lower B', LO]] : [['Upper', UP], ['Lower', LO], ['Arms & Shoulders', ARMS], ['Upper B', UP], ['Lower B', LO]];
-    const [title, slots] = plan[idx]; s = bandSession(title, slots, Object.assign(opt, { variant: idx }));
-  }
-  else if (p.kind === 'gym') {
-    const par = gymParams(p.goal, wi, weeks), [title, tpl, variant] = SPLITS[+p.days || 3][idx];
-    s = gymSession(title + (par.deload ? ' · lighter week' : ''), T[tpl], Object.assign(par, { variant }));
-  }
-  else if (p.kind === 'pg') {
-    const lvl = p.level || 'beginner', block = Math.floor(wi / 4), deload = wi === 3 || wi === 7;
-    if ([1, 3, 5].includes(d)) {
-      const gi = [1, 3, 5].indexOf(d);
-      if (lvl === 'beginner') s = gymSession(['Full Body A', 'Full Body B', 'Full Body C'][gi], T.full, { variant: gi, block, sets: wi < 2 || deload ? 2 : 3, reps: block ? '10–12' : '12–15', isoReps: '12–15', rest: 90, isoRest: 60 });
-      else if (lvl === 'intermediate') s = gymSession(['Full Body A', 'Full Body B', 'Full Body C'][gi], T.full, { variant: gi + 2, block, sets: deload ? 2 : 3, reps: block ? '8–10' : '10–12', isoReps: '12–15', rest: 105, isoRest: 60, finisher: deload ? 0 : 2 });
-      else s = gymSession(['Lower Body', 'Upper Body', 'Full Body'][gi], [T.lower, T.upper, T.full][gi], { variant: gi + 1, block, sets: deload ? 3 : 4, reps: block ? '6–8' : '8–10', isoReps: '10–12', rest: 120, isoRest: 75, finisher: deload ? 0 : 3 });
-    } else {
-      const tue = d === 2, sCode = wi % 2 ? 'S2' : 'S1';
-      if (lvl === 'beginner') s = STRETCH_SESSION(tue ? sCode : (sCode === 'S1' ? 'S2' : 'S1'));
-      else if (lvl === 'intermediate') s = tue ? timedSession(COMPOUND[wi % 2 ? 'B' : 'A'].name, COMPOUND[wi % 2 ? 'B' : 'A'].items, { rounds: deload ? 2 : 3 }) : STRETCH_SESSION(sCode);
-      else s = tue ? timedSession(COMPOUND[wi % 2 ? 'B' : 'C'].name, COMPOUND[wi % 2 ? 'B' : 'C'].items, { rounds: deload ? 3 : 4, work: 45, rest: 15 }) : STRETCH_SESSION(sCode);
-    }
-  }
-  else if (p.kind === 'pm') s = pmSession(p, idx + (p.len === 'day' ? dayNum(k) : 0), wi);
+  if (planSchedule(p).indexOf(d) < 0) return Object.assign(base, { rest: true });
+  if (p.kind === 'home-compound') { const key = 'ABC'[(+p.days === 1 ? dayNum(k) : planSchedule(p).indexOf(d)) % 3]; return Object.assign(base, { session: compoundSession(key, { suffix: +p.days === 1 ? ' · travel' : '' }) }); }
+  const w = planWeek(p, wAbs, k);
+  Object.assign(base, { st: w.st });
+  if (w.missing && [1, 3, 5].includes(d)) return Object.assign(base, { rest: true, missing: true });
+  const s = w.days[d];
   return s ? Object.assign(base, { session: s }) : Object.assign(base, { rest: true });
-}
-function pmSession(p, n, wi) {
-  const focus = p.focus || 'full', mins = +p.mins || 30, v = n % 3;
-  const titleF = { upper: 'Upper Body', lower: 'Lower Body', full: 'Full Body' }[focus];
-  if (p.place === 'gym') {
-    const slots = { upper: ['hpush', 'vpull', 'vpush', 'hpull', 'delt', 'bi', 'tri', 'fly', 'rear'], lower: ['squat', 'hinge', 'lunge', 'legcurl', 'glute', 'legext', 'calf', 'core', 'core'], full: ['squat', 'hpush', 'hpull', 'hinge', 'vpush', 'vpull', 'lunge', 'core', 'delt'] }[focus].slice(0, { 30: 5, 45: 7, 60: 9 }[mins]);
-    const block = Math.floor(wi / 4);
-    return gymSession(`${titleF} ${'ABC'[v]} · ${mins} min`, slots, { variant: v, block, sets: wi < 1 ? 2 : 3, reps: block ? '8–10' : '10–12', isoReps: '12–15', rest: mins === 30 ? 60 : 90, isoRest: 45 });
-  }
-  const pools = { upper: [BWP.push, BDP.hpull, BDP.sh, BDP.push, BDP.bi, BDP.tri, BWP.back, BDP.vpull, BWP.core, BWP.push], lower: [BWP.legs, BWP.glute, BDP.legs, BDP.glute, BWP.legs, BWP.core, BWP.glute, BDP.legs, BWP.cardio, BWP.core], full: [BWP.legs, BWP.push, BDP.hpull, BWP.glute, BDP.sh, BWP.cardio, BWP.core, BDP.legs, BWP.back, BWP.push] }[focus];
-  const count = { 30: 6, 45: 8, 60: 10 }[mins], rounds = { 30: 3, 45: 4, 60: 4 }[mins];
-  const items = pools.slice(0, count).map((pool, i) => { const name = pick(pool, v + i + wi); return ex(name, pool === BDP.hpull || Object.values(BDP).includes(pool) ? 'bd' : 'bw'); });
-  const work = [30, 35, 40, 45][Math.min(3, Math.floor(wi / 2))];
-  return timedSession(`${titleF} ${'ABC'[v]} · ${mins} min`, items, { work, rest: 60 - work, rounds });
 }
 const curPlan = () => S.profile.wplan || null;
 function planToday(k = TODAY()) { const p = curPlan(); return p ? planOn(p, k) : null; }
 function planLabel(p) {
   if (!p) return '';
-  if (p.kind === 'gym') return `Gym · ${p.goal === 'lose' ? 'Lose weight' : 'Build muscle'} · ${p.days} days · ${p.weeks} weeks`;
-  if (p.kind === 'home-bands') return `Home · Elastic bands · ${p.days} days · 4 weeks`;
-  if (p.kind === 'home-compound') return `Home · Compound · ${p.days || 3} days`;
-  if (p.kind === 'pg') return `Personalized (G) · ${capF(p.level)} · 8 weeks`;
-  if (p.kind === 'pm') return `Personalized (M) · ${capF(p.place)} · ${p.mins} min · ${{ day: 'Daily', week: 'Weekly', '4w': '4 weeks', '8w': '8 weeks' }[p.len]} · ${capF(p.focus)}${p.len === 'day' ? '' : ' · ' + p.days + ' days'}`;
+  if (p.kind === 'gym') return `Gym · ${p.goal === 'lose' ? 'Lose weight' : 'Build muscle'} · ${p.days} days · ${LEN_LABEL[p.weeks] || p.weeks + ' weeks'}`;
+  if (p.kind === 'home-bands') return `Home · Elastic bands · ${p.days} days · ${LEN_LABEL[p.weeks] || '4 weeks'}`;
+  if (p.kind === 'home-compound') return +p.days === 1 ? 'Home · Compound · 1 day (travel)' : `Home · Compound · ${p.days || 3} days`;
+  if (p.kind === 'pg') return p.level === 'master' ? 'Personalized (G) · Master · 8 weeks' : `Personalized (G) · ${capF(p.level)} · ${LEN_LABEL[p.len] || '8 weeks'}${p.len === '180d' || p.len === '360d' ? ' · levels up' : ''}`;
+  if (p.kind === 'pm') { const L = { day: 'Daily', week: '1 week', '4w': '4 weeks', '8w': '8 weeks' }[p.len]; return p.len === 'day' ? `Personalized (M) · ${capF(p.place)} · ${p.mins} min · Daily · ${capF(p.focus)}` : `Personalized (M) · ${capF(p.place)} · ${p.mins} min · ${L} · ${p.days} days (${(PM_SPLIT[p.days] || []).map(f => f[0].toUpperCase()).join(' ')})`; }
   return PLAN_KINDS[p.kind];
 }
 const capF = s => s ? s[0].toUpperCase() + s.slice(1) : '';
 function sessionMins(s) {
   if (!s) return 0;
   if (s.mode === 'timed') return Math.round(((s.warm ? 180 : 0) + s.items.length * s.rounds * (s.work + s.rest) + (s.rounds - 1) * s.roundRest) / 60);
-  const t = sum(s.items.map(i => (+i.sets || 1) * (45 + (+i.rest || 90)))) + (s.finisher ? s.finisher.items.length * s.finisher.rounds * 60 : 0) + 180;
+  const t = sum(s.items.map(i => (+i.sets || 1) * (45 + (+i.rest || 90)))) + (s.finisher ? s.finisher.items.length * s.finisher.rounds * 60 : 0) + 120;
   return Math.round(t / 60);
 }
 const sessionDone = k => S.workoutLog.some(l => l.date === k && (l.prog || l.plan)) || S.mobilityLog.some(l => l.date === k && l.prog);
@@ -3007,8 +3094,8 @@ function runSession(s, meta) {
     const ll = lastLift(st.e.n), prev = lifts.filter(x => x.n === st.e.n).slice(-1)[0];
     const wv = prev?.w ?? ll?.w ?? '';
     $m('.pl-phase').textContent = `Set ${st.set} of ${st.sets}`; $m('.pl-phase').className = 'pl-phase';
-    $m('.pl-mid').innerHTML = `<div class="pl-reps">${esc(String(st.e.reps))}${/s$/.test(String(st.e.reps)) || st.e.reps === 'max' ? '' : ' reps'}</div>${st.e.note ? `<div class="small muted" style="text-align:center">${esc(st.e.note)}</div>` : ''}
-      ${/s$/.test(String(st.e.reps)) ? '' : `<div class="pl-log"><button class="cbtn sm" data-a="plWm" data-v="-2.5">−</button><label><input id="pl-w" class="input" inputmode="decimal" value="${wv}" placeholder="kg"><small>weight (kg)</small></label><button class="cbtn sm" data-a="plWm" data-v="2.5">+</button><label><input id="pl-r" class="input" inputmode="numeric" value="${esc(String(st.e.reps).split('–').pop().replace(/\D/g, '') || '')}" placeholder="reps"><small>reps done</small></label></div>`}
+    $m('.pl-mid').innerHTML = `<div class="pl-reps">${esc(String(st.e.reps))}${/s$/.test(String(st.e.reps)) || st.e.reps === 'max' ? '' : ' reps'}</div>${st.e.note ? `<div class="small muted" style="text-align:center">${esc(st.e.note)}</div>` : ''}${st.e.slot === 'lowback' ? '<div class="small" style="text-align:center;color:var(--accent-strong)">🛡️ Back care · no pain, stop if it hurts</div>' : ''}
+      ${/s$/.test(String(st.e.reps)) || !String(st.e.v).startsWith('gy') ? `<div class="pl-log"><label style="flex:1"><input id="pl-r" class="input" inputmode="numeric" value="${esc(String(st.e.reps).split('–').pop().replace(/\D/g, '') || '')}" placeholder="reps"><small>reps done</small></label></div>` : `<div class="pl-log"><button class="cbtn sm" data-a="plWm" data-v="-2.5">−</button><label><input id="pl-w" class="input" inputmode="decimal" value="${wv}" placeholder="kg"><small>weight (kg)</small></label><button class="cbtn sm" data-a="plWm" data-v="2.5">+</button><label><input id="pl-r" class="input" inputmode="numeric" value="${esc(String(st.e.reps).split('–').pop().replace(/\D/g, '') || '')}" placeholder="reps"><small>reps done</small></label></div>`}
       ${ll ? `<div class="small muted" style="text-align:center;margin-top:6px">Last time: ${ll.w} kg × ${esc(String(ll.reps || ''))} · ${relDay(ll.date)}</div>` : ''}`;
     $m('.pl-next').textContent = '';
     $m('.pl-ctrl').innerHTML = `<button class="iconbtn big" data-a="plPrev" aria-label="Previous">⏮</button><button class="btn pl-done-btn" data-a="plSetDone">${I.check} Set done</button><button class="iconbtn big" data-a="plNext" aria-label="Skip">⏭</button>`;
@@ -3040,99 +3127,179 @@ function startPlanned(o) {
   runSession(o.session, curPlan());
 }
 function sessionPreview(s, k) {
-  const list = s.mode === 'timed' ? s.items : s.items;
-  openSheet(esc(s.title), `<p class="small muted" style="margin-top:-6px">~${sessionMins(s)} min · ${s.mode === 'timed' ? `${s.rounds} round${s.rounds > 1 ? 's' : ''} · ${s.work}s work / ${s.rest}s rest` : `${s.items.length} exercises`}${s.finisher ? ' + finisher' : ''}</p>
-    <div class="exlist">${list.map((e, i) => `<div class="exrow">${evbox(e, 'vthumb xs', 0)}<div class="body"><div class="t">${i + 1}. ${esc(e.n)}</div><div class="small muted">${s.mode === 'timed' ? s.work + ' s' : `${e.sets} × ${esc(String(e.reps))}${e.note ? ' · ' + esc(e.note) : ''}`}</div></div></div>`).join('')}
+  openSheet(esc(s.title), `<p class="small muted" style="margin-top:-6px">~${sessionMins(s)} min · ${s.mode === 'timed' ? `${s.rounds} round${s.rounds > 1 ? 's' : ''} · ${s.work}s work / ${s.rest}s rest` : `${s.items.length} exercises · tap one to see your weights`}${s.finisher ? ' + finisher' : ''}</p>
+    <div class="exlist">${s.items.map((e, i) => `<button class="exrow exbtn" data-a="exInfo" data-n="${esc(e.n)}" data-v="${esc(e.v)}">${evbox(e, 'vthumb xs', 0)}<div class="body"><div class="t">${i + 1}. ${esc(e.n)}${e.slot === 'lowback' ? ' 🛡️' : ''}</div><div class="small muted">${s.mode === 'timed' ? s.work + ' s' : `${e.sets} × ${esc(String(e.reps))}${e.note ? ' · ' + esc(e.note) : ''}`}${s.mode !== 'timed' && lastLift(e.n) ? ` · last ${lastLift(e.n).w} kg` : ''}</div></div></button>`).join('')}
     ${s.finisher ? `<div class="eyebrow" style="margin:12px 0 6px">Finisher · ${s.finisher.rounds} rounds · 40 s / 20 s</div>${s.finisher.items.map(e => `<div class="exrow">${evbox(e, 'vthumb xs', 0)}<div class="body"><div class="t">${esc(e.n)}</div></div></div>`).join('')}` : ''}</div>
-    <button class="btn" style="margin-top:14px" data-a="go">${I.play} Start this workout</button>`, { go() { closeSheet(); runSession(s, curPlan()); } });
+    <button class="btn" style="margin-top:14px" data-a="go">${I.play} Start this workout</button>`, { go() { closeSheet(); runSession(s, curPlan()); }, exInfo(el) { exSheet(el.dataset.n, el.dataset.v); } });
+}
+
+/* ---------- exercise sheet: video, weight history chart, log a set without the player ---------- */
+function liftChart(n) {
+  const L = (S.lifts || []).filter(x => x.n === n && x.w != null), by = {};
+  L.forEach(x => { by[x.date] = Math.max(by[x.date] ?? 0, +x.w); });
+  const pts = Object.keys(by).sort().slice(-12).map(k => [k, by[k]]);
+  if (pts.length < 2) return pts.length ? `<p class="small muted" style="margin:6px 0 0">One session logged — the chart appears after your second.</p>` : '';
+  const W = 320, H = 120, P = 22, ys = pts.map(p => p[1]), lo = Math.min(...ys), hi = Math.max(...ys), rg = hi - lo || 1;
+  const X = i => P + i * (W - 2 * P) / (pts.length - 1), Y = v => H - P - (v - lo) / rg * (H - 2 * P);
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)} ${Y(p[1]).toFixed(1)}`).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" class="liftchart" role="img" aria-label="Best weight per session">
+    <path d="${line}" fill="none" stroke="var(--accent-strong)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map((p, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}" r="3.5" fill="var(--accent-strong)"/>`).join('')}
+    <text x="${X(0)}" y="${H - 4}" font-size="10" fill="var(--muted)">${fmt(pts[0][0], { day: 'numeric', month: 'short' })}</text>
+    <text x="${X(pts.length - 1)}" y="${H - 4}" font-size="10" fill="var(--muted)" text-anchor="end">${fmt(pts[pts.length - 1][0], { day: 'numeric', month: 'short' })}</text>
+    <text x="${X(pts.length - 1)}" y="${Y(pts[pts.length - 1][1]) - 8}" font-size="11" font-weight="600" fill="var(--ink)" text-anchor="end">${pts[pts.length - 1][1]} kg</text></svg>`;
+}
+function exSheet(n, v) {
+  const e = { n, v: v || 'gy:' + vNorm(n) };
+  const paint = () => {
+    const L = (S.lifts || []).filter(x => x.n === n && x.w != null), by = {};
+    L.forEach(x => (by[x.date] = by[x.date] || []).push(x));
+    const dates = Object.keys(by).sort().reverse().slice(0, 8), best = L.length ? Math.max(...L.map(x => +x.w)) : null, ll = lastLift(n);
+    return `${evbox(e, 'pl-vid sheetvid', 1)}
+      <div class="exstats"><div><b>${ll ? ll.w + ' kg' : '–'}</b><small>last</small></div><div><b>${best != null ? best + ' kg' : '–'}</b><small>best</small></div><div><b>${dates.length ? Object.keys(by).length : 0}</b><small>sessions</small></div></div>
+      ${liftChart(n)}
+      <div class="eyebrow" style="margin:14px 2px 8px">Log a set</div>
+      <div class="pl-log" style="justify-content:flex-start"><button class="cbtn sm" data-a="exWm" data-v="-2.5">−</button><label><input id="ex-w" class="input" inputmode="decimal" value="${ll?.w ?? ''}" placeholder="kg"><small>weight (kg)</small></label><button class="cbtn sm" data-a="exWm" data-v="2.5">+</button><label><input id="ex-r" class="input" inputmode="numeric" value="${esc(String(ll?.reps || ''))}" placeholder="reps"><small>reps</small></label></div>
+      <button class="btn" style="margin-top:10px" data-a="exLog">${I.check} Save set</button>
+      ${dates.length ? `<div class="eyebrow" style="margin:16px 2px 6px">History</div>` + listCard(dates.map(k => `<div class="item"><div class="body"><div class="t">${fmt(k, { weekday: 'short', day: 'numeric', month: 'short' })}</div><div class="m">${by[k].map(x => `${x.w} kg × ${esc(String(x.reps || '–'))}`).join(' · ')}</div></div><button class="iconbtn" data-a="exDelDay" data-d="${k}" aria-label="Delete this day">${I.x || '×'}</button></div>`).join('')) : '<p class="small muted" style="margin-top:12px">No weights yet — log one above or during a workout.</p>'}`;
+  };
+  const refresh = () => { const b = $('.sheet .sheet-body') || $('.sheet'); const host = $('.js-exs'); if (host) host.innerHTML = paint(); };
+  openSheet(n, `<div class="js-exs">${paint()}</div>`, {
+    exWm(el) { const inp = $('#ex-w'); const x = parseFloat(String(inp.value || '0').replace(',', '.')) || 0; inp.value = Math.max(0, Math.round((x + +el.dataset.v) * 10) / 10); },
+    exLog() { const w = parseFloat(String(val('#ex-w')).replace(',', '.')), r = val('#ex-r'); if (isNaN(w)) return toast('Add the weight first'); const k = TODAY(), set = (S.lifts || []).filter(x => x.n === n && x.date === k).length + 1; S.lifts = (S.lifts || []).concat([{ date: k, n, set, w, reps: r }]); save(); refresh(); buzz(); toast(`Set ${set} saved · ${w} kg ✓`); },
+    exDelDay(el) { const d = el.dataset.d; S.lifts = (S.lifts || []).filter(x => !(x.n === n && x.date === d)); save(); refresh(); toast('Deleted'); },
+  });
 }
 
 /* ---------- plan picker (remembers your choice) ---------- */
 const WZ_Q = {
   kind: ['Where will you train?', [['home', '🏠 Home'], ['gym', '🏋️ Gym'], ['pg', '⭐ Personalized (G)'], ['pm', '💫 Personalized (M)']]],
-  home: ['Which home plan?', [['home-compound', 'Compound · full body'], ['home-bands', 'Elastic bands · 4 weeks'], ['reset4', 'RESET classic · 4 weeks']]],
-  goal: ['Your goal', [['lose', '🔥 Lose weight'], ['build', '💪 Build muscle'], ['anatoly', '⚡ Anatoly · 8 weeks']]],
-  days: ['Days per week', [['3', '3 days'], ['4', '4 days'], ['5', '5 days']]],
-  cdays: ['Days per week', [['2', '2 days'], ['3', '3 days']]],
-  weeks: ['Program length', [['4', '4 weeks'], ['8', '8 weeks'], ['12', '12 weeks']]],
-  level: ['Your level', [['beginner', 'Beginner'], ['intermediate', 'Intermediate'], ['advanced', 'Advanced']]],
+  home: ['Which home plan?', [['home-compound', 'Compound · full body'], ['home-bands', 'Elastic bands'], ['reset4', 'RESET classic · 4 weeks']]],
+  goal: ['Your goal', [['lose', '🔥 Lose weight'], ['build', '💪 Build muscle']]],
+  days: ['Days per week', [['2', '2 days'], ['3', '3 days'], ['4', '4 days'], ['5', '5 days'], ['6', '6 days']]],
+  cdays: ['How often?', [['1', '1 day · travel / any day'], ['2', '2 days a week'], ['3', '3 days a week']]],
+  weeks: ['Program length', [['1', '1 week'], ['2', '2 weeks'], ['4', '4 weeks'], ['8', '8 weeks'], ['12', '12 weeks'], ['26', '6 months'], ['52', '1 year']]],
+  level: ['Your level', [['beginner', 'Beginner'], ['intermediate', 'Intermediate'], ['advanced', 'Advanced'], ['master', '🏆 Master']]],
+  plen: ['How long?', [['4w', '4 weeks'], ['8w', '8 weeks'], ['12w', '12 weeks'], ['180d', '180 days'], ['360d', '360 days']]],
   place: ['Where?', [['home', '🏠 Home'], ['gym', '🏋️ Gym']]],
   mins: ['How long?', [['30', '30 min'], ['45', '45 min'], ['60', '60 min']]],
-  len: ['Plan type', [['day', 'Daily routine'], ['week', 'Weekly routine'], ['4w', '4 weeks'], ['8w', '8 weeks']]],
-  focus: ['Focus', [['upper', 'Upper body'], ['lower', 'Lower body'], ['full', 'Full body']]],
-  pdays: ['Days per week', [['2', '2'], ['3', '3'], ['4', '4'], ['5', '5']]],
+  len: ['Plan type', [['day', 'Daily routine'], ['week', '1 week'], ['4w', '4 weeks'], ['8w', '8 weeks']]],
+  focus: ['Today’s focus', [['upper', 'Upper body'], ['lower', 'Lower body'], ['full', 'Full body']]],
+  pdays: ['Days per week', [['3', '3 · U L F'], ['4', '4 · U L F Core'], ['5', '5 · U L F Core F'], ['6', '6 · U L F U L F']]],
+};
+const WZ_HINT = {
+  plen: '180 & 360 days level up by themselves every 3 months and rotate exercises every 4 weeks.',
+  level: 'Every gym day keeps legs lighter and adds lower-back care and extra arms. Master = your powerbuilding file.',
 };
 function wzFlow(w) {
   const f = ['kind'];
-  if (w.kind === 'home') { f.push('home'); if (w.home === 'home-bands') f.push('days'); if (w.home === 'home-compound') f.push('cdays'); }
-  if (w.kind === 'gym') { f.push('goal'); if (w.goal && w.goal !== 'anatoly') f.push('days', 'weeks'); }
-  if (w.kind === 'pg') f.push('level');
-  if (w.kind === 'pm') { f.push('place', 'mins', 'len', 'focus'); if (w.len && w.len !== 'day') f.push('pdays'); }
+  if (w.kind === 'home') { f.push('home'); if (w.home === 'home-bands') f.push('days', 'weeks'); if (w.home === 'home-compound') f.push('cdays'); }
+  if (w.kind === 'gym') { f.push('goal'); if (w.goal) f.push('days', 'weeks'); }
+  if (w.kind === 'pg') { f.push('level'); if (w.level && w.level !== 'master') f.push('plen'); }
+  if (w.kind === 'pm') { f.push('place', 'mins', 'len'); if (w.len === 'day') f.push('focus'); else if (w.len) f.push('pdays'); }
   return f;
 }
 const wzReady = w => wzFlow(w).every(q => w[q]);
 function wzToPlan(w) {
   const start = mondayOf(TODAY());
-  if (w.kind === 'home') return w.home === 'home-bands' ? { kind: 'home-bands', days: +w.days, start } : w.home === 'home-compound' ? { kind: 'home-compound', days: +w.cdays, start } : { kind: 'reset4', start };
-  if (w.kind === 'gym') return w.goal === 'anatoly' ? { kind: 'anatoly', start } : { kind: 'gym', goal: w.goal, days: +w.days, weeks: +w.weeks, start };
-  if (w.kind === 'pg') return { kind: 'pg', level: w.level, start };
-  return { kind: 'pm', place: w.place, mins: +w.mins, len: w.len, focus: w.focus, days: w.len === 'day' ? 7 : +w.pdays, start };
+  if (w.kind === 'home') return w.home === 'home-bands' ? { kind: 'home-bands', days: +w.days, weeks: +w.weeks, start } : w.home === 'home-compound' ? { kind: 'home-compound', days: +w.cdays, start } : { kind: 'reset4', start };
+  if (w.kind === 'gym') return { kind: 'gym', goal: w.goal, days: +w.days, weeks: +w.weeks, start };
+  if (w.kind === 'pg') return w.level === 'master' ? { kind: 'pg', level: 'master', start } : { kind: 'pg', level: w.level, len: w.plen, start };
+  return { kind: 'pm', place: w.place, mins: +w.mins, len: w.len, focus: w.len === 'day' ? w.focus : '', days: w.len === 'day' ? 7 : +w.pdays, start };
 }
+const masterImportCard = () => `<section class="card"><div class="h3" style="margin-bottom:4px">Load your Master file</div><p class="small muted" style="margin:0 0 10px">Import your <b>Exercises Videos zip</b> (with the program file inside) — or the program file on its own. It stays only on this phone.</p><label class="btn soft" style="cursor:pointer">📥 Import zip or program file<input type="file" id="vidImport" accept=".zip,.json,application/json" hidden></label></section>`;
 function wizardHTML() {
   const w = ui.wz || (ui.wz = {});
   const flow = wzFlow(w);
   let out = `<section class="card tint-accent"><div class="h3" style="margin-bottom:4px">Choose your plan</div><p class="small" style="margin:0;color:var(--ink2)">Pick once — RESET remembers it and shows today’s workout on Home every day.</p></section>`;
   for (const qk of flow) {
     const [label, opts] = WZ_Q[qk];
-    out += `<div class="wzq"><div class="eyebrow" style="margin:0 2px 8px">${label}</div><div class="wzopts ${opts.length > 3 ? 'four' : ''}">${opts.map(([v, l]) => `<button class="wzopt ${w[qk] === v ? 'on' : ''}" data-a="wzPick" data-q="${qk}" data-v="${v}">${l}</button>`).join('')}</div></div>`;
+    out += `<div class="wzq"><div class="eyebrow" style="margin:0 2px 8px">${label}</div><div class="wzopts ${opts.length > 3 ? 'four' : ''}">${opts.map(([v, l]) => `<button class="wzopt ${w[qk] === v ? 'on' : ''}" data-a="wzPick" data-q="${qk}" data-v="${v}">${l}</button>`).join('')}</div>${WZ_HINT[qk] && w.kind === 'pg' ? `<p class="small muted" style="margin:8px 2px 0">${WZ_HINT[qk]}</p>` : ''}</div>`;
     if (!w[qk]) break;
   }
-  if (w.kind === 'gym' && w.goal === 'anatoly' && !S.customPrograms?.anatoly) out += `<section class="card"><div class="h3" style="margin-bottom:4px">Import the Anatoly file first</div><p class="small muted" style="margin:0 0 10px">Tap below and choose <b>anatoly-program.json</b>. It stays only on this phone.</p><label class="btn soft" style="cursor:pointer">📥 Import program file<input type="file" id="vidImport" accept=".json,application/json,.zip" hidden></label></section>`;
-  if (wzReady(w)) { const p = wzToPlan(w), first = planOn(p, TODAY()); out += `<section class="card"><div class="eyebrow">Your plan</div><div class="h3" style="margin:4px 0 2px">${esc(planLabel(p))}</div><div class="small muted">${first?.rest ? 'Today is a rest day — your first workout appears on Home on your next training day.' : first?.session ? 'Today: ' + esc(first.session.title) : ''}</div><button class="btn" style="margin-top:12px" data-a="wzSave" ${p.kind === 'anatoly' && !S.customPrograms?.anatoly ? 'disabled' : ''}>Start this plan</button></section>`; }
+  if (w.kind === 'pg' && w.level === 'master' && !S.customPrograms?.anatoly) out += masterImportCard();
+  if (wzReady(w)) {
+    const p = wzToPlan(w), first = planOn(p, TODAY());
+    out += `<section class="card"><div class="eyebrow">Your plan</div><div class="h3" style="margin:4px 0 2px">${esc(planLabel(p))}</div><div class="small muted">${first?.rest ? 'Today is a rest day — your first workout appears on Home on your next training day.' : first?.session ? 'Today: ' + esc(first.session.title) : ''}</div>${planWeekPreview(p)}<button class="btn" style="margin-top:12px" data-a="wzSave">Start this plan</button></section>`;
+  }
   if (curPlan()) out += `<button class="btn ghost" data-a="wzCancel">Keep my current plan</button>`;
   return out;
 }
+function planWeekPreview(p) {
+  const mon = mondayOf(TODAY());
+  const rows = Array.from({ length: 7 }, (_, i) => addD(mon, i)).map(k => ({ k, o: planOn(p, k) })).filter(x => x.o && !x.o.rest && x.o.session);
+  if (!rows.length || p.len === 'day') return '';
+  return `<div class="wkprev">${rows.map(({ k, o }) => `<div><b>${DAY_LETTER[dow(k)]}</b><span>${esc(o.session.title)}</span></div>`).join('')}</div>`;
+}
 Object.assign(A, {
-  wzPick(el) { const w = ui.wz || (ui.wz = {}); const q = el.dataset.q; w[q] = el.dataset.v; const flow = wzFlow(w); flow.slice(flow.indexOf(q) + 1).forEach(k => { if (!wzFlow(w).includes(k)) delete w[k]; }); Object.keys(w).forEach(k => { if (!wzFlow(w).includes(k)) delete w[k]; }); render(); },
-  wzSave() { const p = wzToPlan(ui.wz || {}); S.profile.wplan = p; ui.wz = null; ui.wzOpen = false; commit(); toast('Plan saved — see Today on Home ✓'); },
+  wzPick(el) { const w = ui.wz || (ui.wz = {}); const q = el.dataset.q; w[q] = el.dataset.v; Object.keys(w).forEach(k => { if (!wzFlow(w).includes(k)) delete w[k]; }); render(); },
+  wzSave() { const p = wzToPlan(ui.wz || {}); S.profile.wplan = p; S.profile.lightWk = null; ui.wz = null; ui.wzOpen = false; commit(); toast('Plan saved — see Today on Home ✓'); },
   wzCancel() { ui.wz = null; ui.wzOpen = false; render(); },
   wzChange() { ui.wzOpen = true; ui.wz = {}; render(); },
   planStart() { startPlanned(planToday()); },
   planDay(el) { const o = planOn(curPlan(), el.dataset.d); if (o?.legacy) return runProgram(o.legacy); if (o?.session) sessionPreview(o.session, el.dataset.d); },
+  exInfo(el) { exSheet(el.dataset.n, el.dataset.v); },
+  lightWeek() { const p = curPlan(), wk = lightKey(p, mondayOf(TODAY())); S.profile.lightWk = S.profile.lightWk === wk ? null : wk; commit(); toast(S.profile.lightWk ? '🌿 Lighter week on — fewer sets, no finisher' : 'Back to the normal week 💪'); },
+  quickCompound(el) { const c = COMPOUND[el.dataset.k]; sessionPreview(timedSession(c.name + ' · travel', c.items)); },
 });
+function planStatus(p, o) {
+  const st = o.st || {}, bits = [];
+  if (o.weeks > 1) bits.push(`Week ${o.week} of ${o.weeks}`);
+  if (o.round > 1) bits.push(`Round ${o.round}`);
+  if (st.phase) bits.push(st.phase);
+  if (p.kind === 'pg' && st.level && p.level !== 'master') bits.push(capF(st.level) + (st.level !== p.level ? ' ⬆︎' : ''));
+  return bits.join(' · ') || 'Every week';
+}
+const canLighten = (p, o) => o.st && !o.st.fixedLight && ((p.kind === 'pg' && p.level !== 'master' && o.st.L > 0) || p.kind === 'gym' || p.kind === 'home-bands');
 function planScreen() {
   const p = curPlan();
   if (!p || ui.wzOpen) return wizardHTML() + videoSettingsHTML();
   const t = TODAY(), o = planOn(p, t), mon = mondayOf(t), dn = sessionDone(t);
   const week = Array.from({ length: 7 }, (_, i) => addD(mon, i)).map(k => ({ k, o: planOn(p, k) }));
-  let out = `<section class="card prog-hero"><div class="row"><span class="eyebrow">${o.weeks > 1 ? `Week ${o.week} of ${o.weeks} · Round ${o.round}` : 'Every week'}</span><span class="spacer"></span><button class="link" data-a="wzChange">Change plan</button></div>
+  const letter = q => q.session.tag || q.session.title.match(/\b([A-H])\b/)?.[1] || q.session.title[0];
+  let out = `<section class="card prog-hero"><div class="row"><span class="eyebrow">${esc(planStatus(p, o))}</span><span class="spacer"></span><button class="link" data-a="wzChange">Change plan</button></div>
     <div class="small muted" style="margin-top:4px">${esc(planLabel(p))}</div>
-    <div class="h2" style="margin:10px 0 2px">${o.rest ? (o.missing ? 'Import the Anatoly file' : 'Rest day 🌿') : esc(o.session.title)}</div>
-    <div class="small muted">${o.rest ? (o.missing ? 'Your plan needs the program file — tap Change plan › Gym › Anatoly.' : 'Recovery is part of the plan. Walk, stretch gently or simply rest.') : o.legacy ? '' : `~${sessionMins(o.session)} min`}</div>
-    ${!o.rest ? `<button class="btn" style="margin-top:14px" data-a="planStart">${I.play} ${dn ? 'Do it again' : 'Start'}</button>${dn ? '<div class="small" style="margin-top:8px;color:var(--accent-strong);font-weight:600;text-align:center">✓ Done today</div>' : ''}` : ''}</section>
-    <div class="weekstrip">${week.map(({ k, o: q }) => `<button class="wsd ${k === t ? 'today' : ''} ${sessionDone(k) ? 'ok' : ''}" ${q && !q.rest ? `data-a="planDay" data-d="${k}"` : ''}><small>${DAY_LETTER[dow(k)]}</small><b>${q && !q.rest ? (q.session.title.match(/\b([A-H])\b/)?.[1] || '●') : '–'}</b>${sessionDone(k) ? '<i>✓</i>' : ''}</button>`).join('')}</div>`;
+    <div class="h2" style="margin:10px 0 2px">${o.rest ? (o.missing ? 'Load your Master file' : 'Rest day 🌿') : esc(o.session.title)}</div>
+    <div class="small muted">${o.rest ? (o.missing ? 'Import your Exercises Videos zip below — the Master program comes inside it.' : 'Recovery is part of the plan. Walk, stretch gently or simply rest.') : o.legacy ? '' : `~${sessionMins(o.session)} min`}</div>
+    ${!o.rest ? `<button class="btn" style="margin-top:14px" data-a="planStart">${I.play} ${dn ? 'Do it again' : 'Start'}</button>${dn ? '<div class="small" style="margin-top:8px;color:var(--accent-strong);font-weight:600;text-align:center">✓ Done today</div>' : ''}` : ''}
+    ${o.st?.fixedLight ? '<div class="small" style="margin-top:10px;color:var(--accent-strong);text-align:center">🌿 Planned lighter week — let your body recover</div>' : canLighten(p, o) ? `<button class="btn ${o.st.light ? 'soft' : 'ghost'}" style="margin-top:8px" data-a="lightWeek">🌿 ${o.st.light ? 'Lighter week is on · tap to undo' : 'Lighter week'}</button>` : ''}</section>
+    <div class="weekstrip">${week.map(({ k, o: q }) => `<button class="wsd ${k === t ? 'today' : ''} ${sessionDone(k) ? 'ok' : ''}" ${q && !q.rest ? `data-a="planDay" data-d="${k}"` : ''}><small>${DAY_LETTER[dow(k)]}</small><b>${q && !q.rest ? esc(letter(q)) : '–'}</b>${sessionDone(k) ? '<i>✓</i>' : ''}</button>`).join('')}</div>`;
+  if (o.missing) out += masterImportCard();
   if (!o.rest && !o.legacy) {
     const s = o.session;
-    out += sectionT('Today’s exercises', `<span class="small muted">${s.items.length}</span>`) + `<div class="exgrid">${s.items.map((e, i) => `<div class="excard">${evbox(e, 'vthumb', 0)}<span class="exn"><b>${i + 1}</b> ${esc(e.n)}<em>${s.mode === 'timed' ? ` · ${s.work}s` : ` · ${e.sets}×${esc(String(e.reps))}`}</em></span></div>`).join('')}</div>`;
+    out += sectionT('Today’s exercises', `<span class="small muted">${s.items.length}</span>`) + `<div class="exgrid">${s.items.map((e, i) => `<button class="excard" data-a="exInfo" data-n="${esc(e.n)}" data-v="${esc(e.v)}">${evbox(e, 'vthumb', 0)}<span class="exn"><b>${i + 1}</b> ${esc(e.n)}${e.slot === 'lowback' ? ' 🛡️' : ''}<em>${s.mode === 'timed' ? ` · ${s.work}s` : ` · ${e.sets}×${esc(String(e.reps))}`}</em></span></button>`).join('')}</div>`;
     if (s.finisher) out += `<p class="small muted" style="margin:-6px 2px 16px">+ Finisher: ${s.finisher.items.map(e => esc(e.n)).join(' & ')} · ${s.finisher.rounds} rounds</p>`;
   }
   out += sectionT('This week') + listCard(week.filter(x => x.o && !x.o.rest).map(({ k, o: q }) => `<button class="nrow" data-a="planDay" data-d="${k}"><span class="ni">${sessionDone(k) ? '✅' : DAY_LETTER[dow(k)]}</span><span class="body"><span class="t">${esc(q.session.title)}</span><span class="m">${fmt(k, { weekday: 'long' })}${q.legacy ? '' : ' · ~' + sessionMins(q.session) + ' min'}</span></span><span class="chev">${I.right}</span></button>`).join('') || `<div class="item"><div class="body"><div class="t">No sessions this week</div></div></div>`);
-  if ((S.lifts || []).length) { const names = [...new Set(S.lifts.map(x => x.n))].slice(-8).reverse(); out += sectionT('Your weights') + listCard(names.map(n => { const L = S.lifts.filter(x => x.n === n && x.w), last = L[L.length - 1], best = Math.max(...L.map(x => x.w)); return `<div class="item"><div class="body"><div class="t">${esc(n)}</div><div class="m">Last ${last.w} kg × ${esc(String(last.reps || ''))} · best ${best} kg</div></div></div>`; }).join('')); }
+  if ((S.lifts || []).length) {
+    const names = [...new Set(S.lifts.filter(x => x.w != null).map(x => x.n).reverse())].slice(0, 10);
+    out += sectionT('Your weights', '<span class="small muted">tap for history</span>') + listCard(names.map(n => { const L = S.lifts.filter(x => x.n === n && x.w != null), last = L[L.length - 1], best = Math.max(...L.map(x => +x.w)); return `<button class="nrow" data-a="exInfo" data-n="${esc(n)}"><span class="body"><span class="t">${esc(n)}</span><span class="m">Last ${last.w} kg × ${esc(String(last.reps || ''))} · best ${best} kg</span></span><span class="chev">${I.right}</span></button>`; }).join(''));
+  }
+  out += sectionT('Quick workout · travel', '<span class="small muted">no equipment</span>') + `<div class="qkw">${['A', 'B', 'C'].map(k => `<button class="qk" data-a="quickCompound" data-k="${k}"><b>${COMPOUND[k].name.split(' · ')[1]}</b><small>~${sessionMins(timedSession('', COMPOUND[k].items))} min</small></button>`).join('')}</div>`;
   return out + videoSettingsHTML();
 }
 function videoSettingsHTML() {
-  vKeys().then(ks => { const e = $('.js-vcount'); if (e) { const g = [...ks].filter(k => k.startsWith('gy:')).length; e.textContent = ks.size ? `${ks.size} videos on this device${g ? ` (${g} gym)` : ''}.` : 'No videos yet — import your Exercises Videos zip.'; } });
+  vKeys().then(ks => { const e = $('.js-vcount'); if (e) { const g = [...ks].filter(k => k.startsWith('gy:')).length; e.textContent = (ks.size ? `${ks.size} videos on this device${g ? ` (${g} gym)` : ''}.` : 'No videos yet — import your Exercises Videos zip.') + (S.customPrograms?.anatoly ? ' Master program ✓' : ''); } });
   return sectionT('Videos & files') + `<section class="card"><p class="small muted js-vcount" style="margin:0 0 12px">Checking…</p>
     <label class="btn soft" style="cursor:pointer">🎬 Import videos (.zip) or program file<input type="file" id="vidImport" accept=".zip,.json,application/json,video/*,image/gif" multiple hidden></label>
     <button class="btn ghost" style="margin-top:8px" data-a="progVidClear">Remove videos from this device</button>
-    <p class="small muted" style="margin:12px 0 0">Your zip can contain the folders Bodyweight, Resistance Bands and Gym. Everything stays private on this phone.</p></section>`;
+    <p class="small muted" style="margin:12px 0 0">Your zip can contain the folders Bodyweight, Resistance Bands and Gym — plus the Master program file. Everything stays private on this phone.</p></section>`;
 }
-/* import: program json */
+/* import: program json — on its own or inside the videos zip */
 const _importVideoFiles = importVideoFiles;
+async function importProgramJSON(text) {
+  try { const d = JSON.parse(text); if (d.resetProgram && Array.isArray(d.weeks)) { S.customPrograms = S.customPrograms || {}; S.customPrograms[d.resetProgram] = d; _wkCache.clear(); commit(); return true; } } catch (e) { }
+  return false;
+}
 importVideoFiles = async function (files) {
-  const js = files.filter(f => /\.json$/i.test(f.name)), rest = files.filter(f => !/\.json$/i.test(f.name));
-  for (const f of js) { try { const d = JSON.parse(await f.text()); if (d.resetProgram && Array.isArray(d.weeks)) { S.customPrograms = S.customPrograms || {}; S.customPrograms[d.resetProgram] = d; commit(); toast(`${d.name || 'Program'} imported ✓`); } else toast('That file isn’t a RESET program'); } catch (e) { toast('Could not read that file'); } }
+  const js = files.filter(f => /\.json$/i.test(f.name)), zips = files.filter(f => /\.zip$/i.test(f.name)), rest = files.filter(f => !/\.json$/i.test(f.name));
+  let got = 0;
+  for (const f of js) { if (await importProgramJSON(await f.text())) got++; else toast('That file isn’t a RESET program'); }
+  for (const f of zips) {
+    try { await loadZip(); const z = await JSZip.loadAsync(f); for (const e of Object.values(z.files)) if (!e.dir && /\.json$/i.test(e.name) && !/__MACOSX|\/\._|^\._/.test(e.name)) { if (await importProgramJSON(await e.async('string'))) got++; } } catch (e) { }
+  }
   if (rest.length) await _importVideoFiles(rest);
+  if (got) setTimeout(() => toast('🏆 Master program loaded ✓'), rest.length ? 1600 : 0);
 };
 
 /* ---------- Home: Today's workout follows the saved plan ---------- */
@@ -3140,7 +3307,7 @@ HOME_RENDER.program = () => {
   const p = curPlan();
   if (!p) return `<section class="card prog-home"><button class="feature" data-a="go" data-to="health/workout"><span class="ic" style="background:var(--accent-soft);font-size:24px">🏋️</span><span class="body"><span class="h3">Choose your workout plan</span><span class="small muted">Home, gym or personalized — pick once, then today’s workout shows here.</span></span></button></section>`;
   const t = TODAY(), o = planOn(p, t), dn = sessionDone(t);
-  if (o.rest) { let nx = null; for (let i = 1; i <= 7 && !nx; i++) { const q = planOn(p, addD(t, i)); if (q && !q.rest) nx = q.session.title; } return `<section class="card prog-home rest"><div class="row"><span class="pic">🌿</span><div class="body" style="flex:1"><div class="eyebrow">${o.weeks > 1 ? `Week ${o.week}/${o.weeks}` : 'Today'}</div><div class="h3">${o.missing ? 'Import your program file' : 'Rest day'}</div><div class="small muted">${o.missing ? 'Workout Planner › Change plan' : nx ? 'Next: ' + esc(nx) : 'Recover and enjoy.'}</div></div></div></section>`; }
+  if (o.rest) { let nx = null; for (let i = 1; i <= 7 && !nx; i++) { const q = planOn(p, addD(t, i)); if (q && !q.rest) nx = q.session.title; } return `<section class="card prog-home rest"><div class="row"><span class="pic">🌿</span><div class="body" style="flex:1"><div class="eyebrow">${o.weeks > 1 ? `Week ${o.week}/${o.weeks}` : 'Today'}</div><div class="h3">${o.missing ? 'Load your Master file' : 'Rest day'}</div><div class="small muted">${o.missing ? 'Workout Planner › Import your videos zip' : nx ? 'Next: ' + esc(nx) : 'Recover and enjoy.'}</div></div></div></section>`; }
   const s = o.session, items = s.items || [];
   return `<section class="card prog-home"><div class="row" style="align-items:flex-start"><div class="body" style="flex:1"><div class="eyebrow">Today’s workout${o.weeks > 1 ? ` · Week ${o.week}/${o.weeks}` : ''}</div><div class="h2" style="margin:4px 0 2px">${esc(s.title)}</div><div class="small muted">${o.legacy ? '' : `${items.length} exercises · ~${sessionMins(s)} min`}</div></div>${dn ? '<span class="tag">✓ Done</span>' : ''}</div>
     ${items.length ? `<div class="thumbrow">${items.slice(0, 4).map(e => evbox(e, 'vthumb sm', 0)).join('')}<button class="more" data-a="go" data-to="health/workout">${items.length > 4 ? '+' + (items.length - 4) : '›'}</button></div>` : ''}
@@ -3149,11 +3316,25 @@ HOME_RENDER.program = () => {
 /* remove the Steps card */
 delete HOME_CARDS.health;
 { const i = DEFAULT_HOME.findIndex(x => x[0] === 'health'); if (i >= 0) DEFAULT_HOME.splice(i, 1); }
+
 (function v11migrate() {
   if ((S.v || 10) < 11) {
     if (Array.isArray(S.profile.home)) S.profile.home = S.profile.home.filter(x => x[0] !== 'health' && x[0] !== 'steps');
     S.lifts = S.lifts || []; S.customPrograms = S.customPrograms || {};
     S.v = 11; save();
+  }
+})();
+(function v12migrate() {
+  if ((S.v || 11) < 13) {
+    S.lifts = S.lifts || []; S.customPrograms = S.customPrograms || {};
+    const p = S.profile.wplan;
+    if (p) {
+      if (p.kind === 'anatoly') { S.profile.wplan = { kind: 'pg', level: 'master', start: p.start }; }
+      else if (p.kind === 'pg' && p.level !== 'master' && !p.len) p.len = '8w';
+      else if (p.kind === 'pm' && p.len !== 'day') { p.focus = ''; if (!PM_SPLIT[+p.days]) p.days = 3; }
+      else if (p.kind === 'home-bands' && !p.weeks) p.weeks = 4;
+    }
+    S.v = 13; save();
   }
 })();
 
