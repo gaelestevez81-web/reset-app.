@@ -2435,7 +2435,7 @@ function progScreen() {
   }).join(''));
   out += sectionT('Settings') + `<section class="card"><div class="field" style="margin-bottom:12px"><span>Rounds per full-body session</span><div class="seg" style="margin:0">${[1, 2].map(r => `<button class="${progRounds() === r ? 'on' : ''}" data-a="progRounds" data-v="${r}">${r} round${r > 1 ? 's' : ''}</button>`).join('')}</div></div>
     <div class="h3" style="margin-bottom:4px">Exercise videos</div><p class="small muted js-vcount" style="margin:0 0 12px">Checking…</p>
-    <label class="btn soft" style="cursor:pointer">🎬 Import videos (.zip)<input type="file" id="vidImport" accept=".zip,video/*,image/gif" multiple hidden></label>
+    <label class="btn soft" style="cursor:pointer">🎬 Import videos (.zip)<input type="file" id="vidImport" multiple hidden></label>
     <button class="btn ghost" style="margin-top:8px" data-a="progVidClear">Remove videos from this device</button>
     <p class="small muted" style="margin:12px 0 0">Videos stay private on this phone — they’re never uploaded to GitHub. Each phone imports its own copy once.</p></section>`;
   vKeys().then(ks => { const e = $('.js-vcount'); if (e) e.textContent = ks.size ? `${ks.size} videos saved on this device.` : 'No videos yet — import your Exercises Videos zip.'; });
@@ -3207,7 +3207,7 @@ function wzToPlan(w) {
   if (w.kind === 'pg') return w.level === 'master' ? { kind: 'pg', level: 'master', start } : { kind: 'pg', level: w.level, len: w.plen, start };
   return { kind: 'pm', place: w.place, mins: +w.mins, len: w.len, focus: w.len === 'day' ? w.focus : '', days: w.len === 'day' ? 7 : +w.pdays, start };
 }
-const masterImportCard = () => `<section class="card"><div class="h3" style="margin-bottom:4px">Load your Master file</div><p class="small muted" style="margin:0 0 10px">Import your <b>Exercises Videos zip</b> (with the program file inside) — or the program file on its own. It stays only on this phone.</p><label class="btn soft" style="cursor:pointer">📥 Import zip or program file<input type="file" id="vidImport" accept=".zip,.json,application/json" hidden></label></section>`;
+const masterImportCard = () => `<section class="card"><div class="h3" style="margin-bottom:4px">Load your Master file</div><p class="small muted" style="margin:0 0 10px">Import your <b>Exercises Videos zip</b> (with the program file inside) — or the program file on its own. It stays only on this phone.</p><label class="btn soft" style="cursor:pointer">📥 Import zip or program file<input type="file" id="vidImport" hidden></label></section>`;
 function wizardHTML() {
   const w = ui.wz || (ui.wz = {});
   const flow = wzFlow(w);
@@ -3281,7 +3281,7 @@ function planScreen() {
 function videoSettingsHTML() {
   vKeys().then(ks => { const e = $('.js-vcount'); if (e) { const g = [...ks].filter(k => k.startsWith('gy:')).length; e.textContent = (ks.size ? `${ks.size} videos on this device${g ? ` (${g} gym)` : ''}.` : 'No videos yet — import your Exercises Videos zip.') + (S.customPrograms?.anatoly ? ' Master program ✓' : ''); } });
   return sectionT('Videos & files') + `<section class="card"><p class="small muted js-vcount" style="margin:0 0 12px">Checking…</p>
-    <label class="btn soft" style="cursor:pointer">🎬 Import videos (.zip) or program file<input type="file" id="vidImport" accept=".zip,.json,application/json,video/*,image/gif" multiple hidden></label>
+    <label class="btn soft" style="cursor:pointer">🎬 Import videos (.zip) or program file<input type="file" id="vidImport" multiple hidden></label>
     <button class="btn ghost" style="margin-top:8px" data-a="progVidClear">Remove videos from this device</button>
     <p class="small muted" style="margin:12px 0 0">Your zip can contain the folders Bodyweight, Resistance Bands and Gym — plus the Master program file. Everything stays private on this phone.</p></section>`;
 }
@@ -3291,7 +3291,20 @@ async function importProgramJSON(text) {
   try { const d = JSON.parse(text); if (d.resetProgram && Array.isArray(d.weeks)) { S.customPrograms = S.customPrograms || {}; S.customPrograms[d.resetProgram] = d; _wkCache.clear(); commit(); return true; } } catch (e) { }
   return false;
 }
+/* Android often hands files over without their extension — recognise them by content */
+async function sniffFile(f) {
+  try {
+    const h = new Uint8Array(await f.slice(0, 4).arrayBuffer()), nm = f.name || 'file', ext = (nm.split('.').pop() || '').toLowerCase();
+    if (h[0] === 0x50 && h[1] === 0x4B && ext !== 'zip') return new File([f], nm + '.zip', { type: 'application/zip' });
+    if (h[0] === 0x7B && ext !== 'json') return new File([f], nm + '.json', { type: 'application/json' });
+    if (!VTYPES[ext] && /^video\//.test(f.type || '')) return new File([f], nm + '.' + ((f.type.split('/')[1] || 'mp4').replace('quicktime', 'mov')), { type: f.type });
+    if (!VTYPES[ext] && h[0] === 0x47 && h[1] === 0x49 && h[2] === 0x46) return new File([f], nm + '.gif', { type: 'image/gif' });
+  } catch (e) { }
+  return f;
+}
 importVideoFiles = async function (files) {
+  files = await Promise.all(files.map(sniffFile));
+  if (!files.some(f => /\.(zip|json|mp4|mov|m4v|webm|gif)$/i.test(f.name))) return toast('That file isn’t a zip or video — pick Exercises_Videos_Master.zip');
   const js = files.filter(f => /\.json$/i.test(f.name)), zips = files.filter(f => /\.zip$/i.test(f.name)), rest = files.filter(f => !/\.json$/i.test(f.name));
   let got = 0;
   for (const f of js) { if (await importProgramJSON(await f.text())) got++; else toast('That file isn’t a RESET program'); }
