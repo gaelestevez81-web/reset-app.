@@ -2321,7 +2321,7 @@ const vbox = (n, cls = 'vthumb', live = 0) => `<div class="${cls}" data-vk="${es
 let zipState = 0;
 function loadZip() {
   if (window.JSZip) return Promise.resolve();
-  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'jszip.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'jszip.min.js'; s.onload = res; s.onerror = () => rej(new Error('could not load jszip.min.js — is it uploaded to GitHub?')); document.head.appendChild(s); });
 }
 const VTYPES = { mp4: 'video/mp4', m4v: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', gif: 'image/gif' };
 const keyForPath = p => { const gym = /(^|\/)(gym|compound)\//i.test(p), band = /band/i.test(p); return (gym ? 'gy:' : band ? 'bd:' : 'bw:') + vNorm(p); };
@@ -2351,7 +2351,7 @@ async function importVideoFiles(files) {
     toast(n ? `${n} exercise videos ready 🎬` : 'No videos found in that file');
   } catch (e) { console.warn(e); closeSheet(); toast('Import failed — try a smaller zip'); }
 }
-document.addEventListener('change', e => { if (e.target.id === 'vidImport') { const fs = [...(e.target.files || [])]; e.target.value = ''; if (fs.length) importVideoFiles(fs); } });
+document.addEventListener('change', e => { if (e.target.id === 'vidImport') { const fs = [...(e.target.files || [])]; if (fs.length) importVideoFiles(fs).finally(() => { try { e.target.value = ''; } catch (x) { } }); else toast('No file received — try again from Files / Downloads'); } });
 
 /* ---------- program player ---------- */
 function progSteps(p) {
@@ -3303,16 +3303,41 @@ async function sniffFile(f) {
   return f;
 }
 importVideoFiles = async function (files) {
-  files = await Promise.all(files.map(sniffFile));
-  if (!files.some(f => /\.(zip|json|mp4|mov|m4v|webm|gif)$/i.test(f.name))) return toast('That file isn’t a zip or video — pick Exercises_Videos_Master.zip');
-  const js = files.filter(f => /\.json$/i.test(f.name)), zips = files.filter(f => /\.zip$/i.test(f.name)), rest = files.filter(f => !/\.json$/i.test(f.name));
-  let got = 0;
-  for (const f of js) { if (await importProgramJSON(await f.text())) got++; else toast('That file isn’t a RESET program'); }
-  for (const f of zips) {
-    try { await loadZip(); const z = await JSZip.loadAsync(f); for (const e of Object.values(z.files)) if (!e.dir && /\.json$/i.test(e.name) && !/__MACOSX|\/\._|^\._/.test(e.name)) { if (await importProgramJSON(await e.async('string'))) got++; } } catch (e) { }
+  /* one pass: progress shows at once, the zip is opened only once, errors are shown */
+  openSheet('Importing videos', `<div class="small muted" id="imp-msg">Reading ${files.length} file${files.length > 1 ? 's' : ''}…</div><div style="margin-top:12px">${pbar(0)}</div><p class="small muted" style="margin-top:14px">Keep RESET open until it finishes — about 1–3 minutes.</p>`);
+  const msg = t => { const m = $('#imp-msg'); if (m) m.textContent = t; }, bar = p => { const x = $('.sheet .bar i'); if (x) x.style.width = Math.round(p * 100) + '%'; };
+  let n = 0, prog = 0, batch = [];
+  const flush = async () => { if (batch.length) { await vPut(batch); batch = []; } };
+  try {
+    files = await Promise.all(files.map(sniffFile));
+    msg(files.map(f => `${f.name} · ${(f.size / 1048576).toFixed(1)} MB`).join(', '));
+    for (const f of files) {
+      const ext = (f.name.split('.').pop() || '').toLowerCase();
+      if (ext === 'json') { if (await importProgramJSON(await f.text())) prog++; continue; }
+      if (ext === 'zip') {
+        msg('Opening ' + f.name + '…'); await loadZip();
+        if (typeof JSZip === 'undefined') throw new Error('zip reader did not load — check internet and reopen RESET');
+        const z = await JSZip.loadAsync(await f.arrayBuffer());
+        const all = Object.values(z.files).filter(e => !e.dir && !/__MACOSX|\/\._|^\._/.test(e.name));
+        for (const e of all) if (/\.json$/i.test(e.name) && await importProgramJSON(await e.async('string'))) prog++;
+        const ents = all.filter(e => VTYPES[(e.name.split('.').pop() || '').toLowerCase()]);
+        if (!ents.length) msg('No videos inside ' + f.name);
+        for (let i = 0; i < ents.length; i++) {
+          const e = ents[i], x = e.name.split('.').pop().toLowerCase();
+          const blob = await e.async('blob');
+          batch.push([keyForPath(e.name), new Blob([blob], { type: VTYPES[x] }), VTYPES[x]]); n++;
+          if (batch.length >= 10) await flush();
+          msg(`Saving ${i + 1} of ${ents.length}…`); bar((i + 1) / ents.length);
+        }
+      } else if (VTYPES[ext]) { batch.push([keyForPath((f.webkitRelativePath || '') + '/' + f.name), f, VTYPES[ext]]); n++; bar(n / files.length); }
+    }
+    await flush();
+    closeSheet(); S.profile.videosAt = new Date().toISOString(); commit();
+    toast(n ? `${n} exercise videos ready 🎬${prog ? ' · Master ✓' : ''}` : prog ? '🏆 Master program loaded ✓' : 'No videos found — pick Exercises_Videos_Master.zip');
+  } catch (e) {
+    console.warn(e);
+    openSheet('Import failed', `<p class="small">${esc(String(e && (e.message || e.name) || e))}</p><p class="small muted">Send Claude a screenshot of this message.</p>`);
   }
-  if (rest.length) await _importVideoFiles(rest);
-  if (got) setTimeout(() => toast('🏆 Master program loaded ✓'), rest.length ? 1600 : 0);
 };
 
 /* ---------- Home: Today's workout follows the saved plan ---------- */
